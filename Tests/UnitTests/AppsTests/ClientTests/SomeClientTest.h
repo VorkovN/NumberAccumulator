@@ -3,16 +3,13 @@
 
 
 
-namespace apps
-{
-namespace tests
+namespace tests::client
 {
 
-TEST(SimpleTest, testTest)
-{
-    ASSERT_TRUE(2+2==4);
-}
+    TEST(SimpleTest, testTest)
+    {
+        ASSERT_TRUE(2+2==4);
+    }
 
-}
 }
 #endif

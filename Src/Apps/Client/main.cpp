@@ -1,6 +1,15 @@
-#include <iostream>
+#include "ClientFacade.h"
+#include "ClientSettings.h"
+#include "ClientSettingsParser.h"
+
 
 int main() {
-    std::cout << "Hello, World!" << std::endl;
+
+    //TODO сделать парсинг
+    apps::client::ClientSettings settings{};
+
+    apps::client::ClientFacade facade(std::move(settings));
+    facade.start();
+
     return 0;
 }

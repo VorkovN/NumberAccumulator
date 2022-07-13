@@ -1,4 +1,4 @@
-project(Libs)
+project(Interfaces)
 message(STATUS "building ${PROJECT_NAME}")
 
 add_library(${PROJECT_NAME} INTERFACE)

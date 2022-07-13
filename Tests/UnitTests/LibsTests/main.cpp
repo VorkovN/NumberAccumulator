@@ -1,6 +1,6 @@
 ﻿#include <gtest/gtest.h>
 
-#include "SomeLibTest.h"
+#include "NumberParserTest.h"
 
 int main(int argc, char** argv)
 {
