@@ -9,9 +9,14 @@ namespace apps::server
     class ServerTcpTransport: public interface::ITransport
     {
     public:
+        ServerTcpTransport(std::string&& selfIp, uint32_t selfPort);
         void init() override;
         void receive(const std::string& sendData) override;
         void send(const std::string& data) override;
+
+    private:
+        const std::string _selfIp;
+        const uint32_t _selfPort;
     };
 
 }

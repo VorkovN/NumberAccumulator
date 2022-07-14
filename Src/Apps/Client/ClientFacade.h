@@ -1,6 +1,10 @@
 #ifndef NUMBERACCUMULATOR_APPS_CLIENT_CLIENTFACADE_H
 #define NUMBERACCUMULATOR_APPS_CLIENT_CLIENTFACADE_H
 
+#include <memory>
+
+#include <Interfaces/ITransport.h>
+
 #include "ClientSettings.h"
 
 namespace apps::client
@@ -11,8 +15,9 @@ namespace apps::client
     public:
         explicit ClientFacade(ClientSettings&& settings);
         void start();
-    private:
 
+    private:
+        std::unique_ptr<interface::ITransport> transport;
     };
 
 }

@@ -2,7 +2,7 @@
 
 namespace apps::server
 {
-
+    ServerTcpTransport::ServerTcpTransport(std::string&& selfIp, uint32_t selfPort): _selfIp(std::move(selfIp)), _selfPort(selfPort) {}
 
     void ServerTcpTransport::init()
     {
@@ -18,4 +18,5 @@ namespace apps::server
     {
 
     }
+
 }

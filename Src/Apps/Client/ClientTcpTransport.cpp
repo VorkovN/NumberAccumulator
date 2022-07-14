@@ -1,8 +1,10 @@
 #include "ClientTcpTransport.h"
 
+#include <utility>
+
 namespace apps::client
 {
-
+    ClientTcpTransport::ClientTcpTransport(std::string&& serverIp, uint32_t serverPort):_serverIp(std::move(serverIp)), _serverPort(serverPort) {}
 
     void ClientTcpTransport::init()
     {
@@ -18,4 +20,5 @@ namespace apps::client
     {
 
     }
+
 }

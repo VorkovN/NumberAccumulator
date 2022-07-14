@@ -1,8 +1,10 @@
 #include "ClientUdpTransport.h"
 
+#include <utility>
+
 namespace apps::client
 {
-
+    ClientUdpTransport::ClientUdpTransport(std::string&& serverIp, uint32_t serverPort): _serverIp(std::move(serverIp)), _serverPort(serverPort) {}
 
     void ClientUdpTransport::init()
     {
@@ -18,4 +20,5 @@ namespace apps::client
     {
 
     }
+
 }
