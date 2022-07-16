@@ -9,7 +9,7 @@ namespace interface
     {
     public:
         virtual void init() = 0;
-        virtual void receive(const std::string& sendData) = 0;
+        virtual void receive() = 0;
         virtual void send(const std::string& data) = 0;
     };
 }

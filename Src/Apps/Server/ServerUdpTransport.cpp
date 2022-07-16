@@ -11,7 +11,7 @@ namespace apps::server
 
     }
 
-    void ServerUdpTransport::receive(const std::string &sendData)
+    void ServerUdpTransport::receive()
     {
 
     }

@@ -11,7 +11,7 @@ namespace apps::server
     public:
         ServerTcpTransport(std::string&& selfIp, uint32_t selfPort);
         void init() override;
-        void receive(const std::string& sendData) override;
+        void receive() override;
         void send(const std::string& data) override;
 
     private:

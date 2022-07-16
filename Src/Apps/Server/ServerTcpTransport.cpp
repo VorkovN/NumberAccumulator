@@ -9,7 +9,7 @@ namespace apps::server
 
     }
 
-    void ServerTcpTransport::receive(const std::string &sendData)
+    void ServerTcpTransport::receive()
     {
 
     }
