@@ -3,9 +3,10 @@
 
 #include <memory>
 
-#include <Interfaces/ITransport.h>
+//#include <Interfaces/ITransport.h>
 
 #include "ClientSettings.h"
+#include "ClientTransport.h"
 
 namespace apps::client
 {
@@ -17,7 +18,13 @@ namespace apps::client
         void start();
 
     private:
-        std::unique_ptr<interface::ITransport> transport;
+        void handleInput();
+
+    public:
+        static bool _sigIntReceived;
+
+    private:
+        std::unique_ptr<ClientTransport> _transport;
     };
 
 }

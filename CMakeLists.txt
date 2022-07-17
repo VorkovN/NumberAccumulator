@@ -3,6 +3,8 @@ project(NumberAccumulator)
 
 set(CMAKE_CXX_STANDARD 17)
 
+set(CMAKE_CXX_FLAGS -pthread)
+
 message("Apps building:")
 add_subdirectory(Src)
 

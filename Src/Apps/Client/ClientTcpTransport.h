@@ -3,13 +3,13 @@
 
 #include <netinet/in.h>
 
-#include <Interfaces/ITransport.h>
+#include "ClientTransport.h"
 
 
 namespace apps::client
 {
 
-    class ClientTcpTransport: public interface::ITransport
+    class ClientTcpTransport: public ClientTransport
     {
     public:
         ClientTcpTransport(std::string&& serverIp, uint32_t serverPort);
@@ -17,12 +17,6 @@ namespace apps::client
         void receive() override;
         void send(const std::string& data) override;
 
-    private:
-        int _socketFd;
-        sockaddr_in _socketAddress;
-        const std::string _serverIp;
-        const uint32_t _serverPort;
-        socklen_t _socketAddressSize;
     };
 
 }

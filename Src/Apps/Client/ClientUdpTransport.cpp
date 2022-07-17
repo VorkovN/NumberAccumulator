@@ -24,7 +24,7 @@ namespace apps::client
         //todo можно ли в один поток с хендлером?
         while (!_sigIntReceived)
         {
-            ssize_t bytesReceived = recvfrom(_socketFd, (void*)buffer, sizeof(buffer), 0, (struct sockaddr*)&_socketAddress, &_socketAddressSize);
+            ssize_t bytesReceived = recvfrom(_socketFd, (void*)buffer, sizeof(buffer), 0, nullptr, nullptr);
             if (bytesReceived < 0)
                 return; //TODO сделать обработку ошибок
 

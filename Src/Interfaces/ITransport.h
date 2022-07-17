@@ -8,9 +8,9 @@ namespace interface
     class ITransport
     {
     public:
-        virtual void init() = 0;
+        virtual void start() = 0;
         virtual void receive() = 0;
-        virtual void send(const std::string& data) = 0;
+//        virtual void send(const std::string& data) = 0; // серверу нужен еще адрес клиента передавать в аргументах
     };
 }
 

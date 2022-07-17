@@ -9,6 +9,7 @@
 
 namespace apps::client
 {
+    bool ClientTransport::_sigIntReceived = false;
 
     ClientTransport::ClientTransport(std::string &&serverIp, uint32_t serverPort): _serverIp(std::move(serverIp)), _serverPort(serverPort)
     {
@@ -27,15 +28,9 @@ namespace apps::client
         close(_socketFd);
     }
 
-    void ClientTransport::handleInput()
+    void ClientTransport::start()
     {
-        while (!_sigIntReceived)
-            sleep(1);
+        receive();
     }
 
-    void ClientTransport::init()
-    {
-        std::thread(&ITransport::receive, this).detach();
-        handleInput();
-    }
 }

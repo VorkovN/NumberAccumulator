@@ -1,22 +1,20 @@
 #ifndef NUMBERACCUMULATOR_APPS_SERVER_SERVERTCPTRANSPORT_H
 #define NUMBERACCUMULATOR_APPS_SERVER_SERVERTCPTRANSPORT_H
 
-#include <Interfaces/ITransport.h>
+#include "ServerTransport.h"
 
 namespace apps::server
 {
 
-    class ServerTcpTransport: public interface::ITransport
+    class ServerTcpTransport: public ServerTransport
     {
     public:
         ServerTcpTransport(std::string&& selfIp, uint32_t selfPort);
-        void init() override;
+        ~ServerTcpTransport() override;
         void receive() override;
-        void send(const std::string& data) override;
+//        void send(const std::string& data) override;
+        void send(const std::string& data, int peerSocketFd);
 
-    private:
-        const std::string _selfIp;
-        const uint32_t _selfPort;
     };
 
 }

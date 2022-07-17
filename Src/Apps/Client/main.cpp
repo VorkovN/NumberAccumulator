@@ -1,3 +1,4 @@
+#include <csignal>
 #include <iostream>
 
 #include "ClientFacade.h"
@@ -7,11 +8,14 @@
 
 void sig_handler(int sig)
 {
+    apps::client::ClientFacade::_sigIntReceived = true;
     apps::client::ClientTransport::_sigIntReceived = true;
 }
 
 int main(int argc, char** argv)
 {
+    signal(SIGINT, sig_handler);
+
     auto settingsOpt = apps::client::ClientSettingsParser::getSettings(argc, argv);
     if (!settingsOpt) return 0;
     apps::client::ClientSettings settings = settingsOpt.value();

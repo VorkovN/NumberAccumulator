@@ -20,7 +20,7 @@ namespace apps::client
         std::cout << "-h, --help                    Shows this help text" << std::endl;
         std::cout << "-i, --ip 127.0.0.1            Server Ip"            << std::endl;
         std::cout << "-p, --port 1234               Server Port"          << std::endl;
-        std::cout << "-t, --transport [tcp, udp]    Server Port"          << std::endl;
+        std::cout << "-t, --_transport [tcp, udp]    Server Port"          << std::endl;
     }
 
     std::optional<ClientSettings> ClientSettingsParser::getSettings(int argc, char **argv)
@@ -32,7 +32,7 @@ namespace apps::client
                 {"help",      no_argument,       nullptr, 'h'},
                 {"ip",        required_argument, nullptr, 'i'},
                 {"port",      required_argument, nullptr, 'p'},
-                {"transport", required_argument, nullptr, 't'},
+                {"_transport", required_argument, nullptr, 't'},
                 {nullptr, 0, nullptr, 0}
         };
 

@@ -3,9 +3,10 @@
 
 #include <memory>
 
-#include <Interfaces/ITransport.h>
+//#include <Interfaces/ITransport.h>
 
 #include "ServerSettings.h"
+#include "ServerTransport.h"
 
 namespace apps::server
 {
@@ -17,8 +18,8 @@ namespace apps::server
         void start();
 
     private:
-        std::unique_ptr<interface::ITransport> udpTransport;
-        std::unique_ptr<interface::ITransport> tcpTransport;
+        std::unique_ptr<ServerTransport> _udpTransport;
+        std::unique_ptr<ServerTransport> _tcpTransport;
 
     };
 
