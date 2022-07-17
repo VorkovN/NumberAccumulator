@@ -28,10 +28,12 @@ namespace apps::client
         const size_t bufferSize = 1024; //todo нужно ли сделать больше
         char buffer[bufferSize];
 
-        recv(_socketFd, buffer, 1024, MSG_NOSIGNAL);
-//        if (recv(_socketFd, buffer, 1024, MSG_NOSIGNAL));
-//            exit(0); //TODO сделать обработку ошибок
+        ssize_t bytesReceived = recv(_socketFd, buffer, 1024, MSG_NOSIGNAL);
+        if (bytesReceived > 0)
+            exit(0); //TODO сделать обработку ошибок
 
+        std::cout << "bytesReceived: " << bytesReceived << std::endl;
+        std::cout << buffer << std::endl;
     }
 
     void ClientTcpTransport::send(const std::string &data)

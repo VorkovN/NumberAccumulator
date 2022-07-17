@@ -6,7 +6,13 @@
 
 namespace apps::server
 {
-    ServerTcpTransport::ServerTcpTransport(std::string&& selfIp, uint32_t selfPort): ServerTransport(std::move(selfIp), selfPort) {}
+    ServerTcpTransport::ServerTcpTransport(std::string&& selfIp, uint32_t selfPort): ServerTransport(std::move(selfIp), selfPort)
+    {
+        int _serverSocketFd = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
+
+        if(bind(_serverSocketFd, (sockaddr*)(&_serverSocketAddress), _serverSocketAddressSize) == -1)
+            exit(0);
+    }
 
     ServerTcpTransport::~ServerTcpTransport()
     {
@@ -48,6 +54,7 @@ namespace apps::server
                     }
                     else if (bytesReceived > 0)
                     {
+                        std::cout << "bytesReceived: " << bytesReceived << std::endl;
                         send(buffer, events[i].data.fd);
                     }
                 }

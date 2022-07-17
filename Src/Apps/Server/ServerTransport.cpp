@@ -15,14 +15,10 @@ namespace apps::server
     {
         bzero(&_serverSocketAddress, sizeof(_serverSocketAddress));
         _serverSocketAddress.sin_port = htons(_serverPort);
-        _serverSocketAddress.sin_family = AF_INET; //todo зачем его присваивать 2 раза?
-        if (inet_pton(AF_INET, _serverIp.data(), &_serverSocketAddress.sin_addr))
-            exit(0);
-
+        _serverSocketAddress.sin_family = AF_INET;
+//        _serverSocketAddress.sin_addr.s_addr = inet_addr(_serverIp.data());
+        _serverSocketAddress.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
         _serverSocketAddressSize = sizeof(_serverSocketAddress);
-
-        if(bind(_serverSocketFd, (sockaddr*)(&_serverSocketAddress), _serverSocketAddressSize))
-            exit(0);
     }
 
     ServerTransport::~ServerTransport()

@@ -1,11 +1,17 @@
 #include "ServerUdpTransport.h"
 
 #include <iostream>
-#include <utility>
+
 
 namespace apps::server
 {
-    ServerUdpTransport::ServerUdpTransport(std::string&& selfIp, uint32_t selfPort): ServerTransport(std::move(selfIp), selfPort) {}
+    ServerUdpTransport::ServerUdpTransport(std::string&& selfIp, uint32_t selfPort): ServerTransport(std::move(selfIp), selfPort)
+    {
+        _serverSocketFd = socket( AF_INET, SOCK_DGRAM, IPPROTO_UDP );
+
+        if(bind(_serverSocketFd, (sockaddr*)(&_serverSocketAddress), _serverSocketAddressSize) == -1)
+            exit(0);
+    }
 
     ServerUdpTransport::~ServerUdpTransport()
     {
@@ -15,15 +21,16 @@ namespace apps::server
     void ServerUdpTransport::receive()
     {
         sockaddr_in peerSocketAddress{};
+        socklen_t peerSocketAddressSize = sizeof(sockaddr_in);
         const ssize_t bufferSize = 1024; //todo нужно ли сделать больше
         char buffer[bufferSize];
         //todo можно ли в один поток с хендлером?
         while (!_sigIntReceived)
         {
-            ssize_t bytesReceived = recvfrom(_serverSocketFd, (void*)buffer, sizeof(buffer), MSG_NOSIGNAL, (struct sockaddr*)&peerSocketAddress, nullptr);
-            if (bytesReceived < 0)
-                return; //TODO сделать обработку ошибок
-
+            int bytesReceived = recvfrom(_serverSocketFd, buffer, 1024, MSG_NOSIGNAL, (sockaddr*)&peerSocketAddress, &peerSocketAddressSize);
+            if (bytesReceived == -1)
+                continue; //TODO сделать обработку ошибок
+            std::cout << "bytesReceived: " << bytesReceived << std::endl;
             std::cout << buffer << std::endl; //todo вынести в отдельный метод
             std::string testStr = "qwerty";
             send(testStr, std::move(peerSocketAddress)); //todo прочем можно и убрать move
@@ -38,7 +45,7 @@ namespace apps::server
 
     void ServerUdpTransport::send(const std::string &data, sockaddr_in&& peerSocketAddress)
     {
-        ssize_t bytesSent = sendto(_serverSocketFd, data.data(), data.size(), MSG_NOSIGNAL,(struct sockaddr*)&peerSocketAddress, sizeof(peerSocketAddress));
+        ssize_t bytesSent = sendto(_serverSocketFd, data.data(), data.size(), MSG_NOSIGNAL, (sockaddr*)&peerSocketAddress, sizeof(peerSocketAddress));
         if (bytesSent < 0)
             return; //TODO сделать обработку ошибок
     }

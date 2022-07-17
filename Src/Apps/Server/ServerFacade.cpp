@@ -18,6 +18,7 @@ namespace apps::server
 
     void ServerFacade::start()
     {
+        _udpTransport->start();
         std::thread(&ServerTransport::start, _udpTransport.get()).detach();
         _tcpTransport->start();
     }

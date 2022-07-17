@@ -1,4 +1,5 @@
 #include <iostream>
+#include <unistd.h>
 #include "ClientUdpTransport.h"
 
 
@@ -27,7 +28,7 @@ namespace apps::client
             ssize_t bytesReceived = recvfrom(_socketFd, (void*)buffer, sizeof(buffer), 0, nullptr, nullptr);
             if (bytesReceived < 0)
                 return; //TODO сделать обработку ошибок
-
+            std::cout << "bytesReceived: " << bytesReceived << std::endl;
             std::cout << buffer << std::endl; //todo вынести в отдельный метод
         }
     }

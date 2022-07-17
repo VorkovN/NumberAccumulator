@@ -1,5 +1,6 @@
 #include <thread>
 #include <unistd.h>
+#include <iostream>
 #include "ClientFacade.h"
 
 #include "ClientTcpTransport.h"
@@ -26,6 +27,11 @@ namespace apps::client
     void ClientFacade::handleInput()
     {
         while (!_sigIntReceived)
-            sleep(1);
+        {
+            std::cout << "Input your message: " << std::endl;
+            std::string testStr;
+            std::cin >> testStr;
+            _transport->send(testStr);
+        }
     }
 }
