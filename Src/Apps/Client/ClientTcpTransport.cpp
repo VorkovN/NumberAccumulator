@@ -30,6 +30,9 @@ namespace apps::client
 
     void ClientTcpTransport::send(const std::string &data)
     {
+        const size_t bufferSize = 1024; //todo нужно ли сделать больше
+        char buffer[bufferSize];
+        send(_socketFd, buffer, bufferSize, MSG_NOSIGNAL); //чтобы не прилетал SIG_PIPE
 
     }
 

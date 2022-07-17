@@ -14,6 +14,7 @@ namespace apps::client
     {
         bzero(&_socketAddress, sizeof(_socketAddress));
         _socketAddress.sin_port = htons(_serverPort);
+        _socketAddress.sin_family = AF_INET; //todo зачем его присваивать 2 раза?
         if (inet_pton(AF_INET, _serverIp.data(), &_socketAddress.sin_addr))
             exit(0);
 

@@ -34,7 +34,7 @@ namespace apps::client
 
     void ClientUdpTransport::send(const std::string &data)
     {
-        ssize_t bytesSent = sendto(_socketFd, data.data(), data.size(), 0,(struct sockaddr*)&_socketAddress, _socketAddressSize);
+        ssize_t bytesSent = sendto(_socketFd, data.data(), data.size(), MSG_NOSIGNAL,(struct sockaddr*)&_socketAddress, _socketAddressSize);
         if (bytesSent < 0)
             return; //TODO сделать обработку ошибок
     }
