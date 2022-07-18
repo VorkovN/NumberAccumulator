@@ -18,7 +18,7 @@ namespace apps::client
         _socketAddress.sin_family = AF_INET;
 //        _socketAddress.sin_addr.s_addr = inet_addr(_serverIp.data());
         _socketAddress.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-        _socketAddressSize = sizeof(_socketAddress);
+        _socketAddressSize = sizeof(sockaddr_in);
     }
 
     ClientTransport::~ClientTransport()

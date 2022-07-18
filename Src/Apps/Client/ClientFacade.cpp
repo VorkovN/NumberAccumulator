@@ -29,9 +29,9 @@ namespace apps::client
         while (!_sigIntReceived)
         {
             std::cout << "Input your message: " << std::endl;
-            std::string testStr;
-            std::cin >> testStr;
-            _transport->send(testStr);
+            std::string inputString;
+            std::cin >> inputString;
+            _transport->send(inputString);
         }
     }
 }

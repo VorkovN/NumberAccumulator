@@ -10,11 +10,11 @@ namespace apps::client
 {
     ClientTcpTransport::ClientTcpTransport(std::string&& serverIp, uint32_t serverPort): ClientTransport(std::move(serverIp), serverPort)
     {
-        _socketFd = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
+        _socketFd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
         if (_socketFd == -1)
             exit(0);
 
-        if (connect(_socketFd, (struct sockaddr *)&_socketAddress, sizeof _socketAddress) == -1)
+        if (connect(_socketFd, (struct sockaddr *)&_socketAddress, _socketAddressSize) == -1)
             exit(0);
     }
 
@@ -28,8 +28,8 @@ namespace apps::client
         const size_t bufferSize = 1024; //todo нужно ли сделать больше
         char buffer[bufferSize];
 
-        ssize_t bytesReceived = recv(_socketFd, buffer, 1024, MSG_NOSIGNAL);
-        if (bytesReceived > 0)
+        int bytesReceived = recv(_socketFd, buffer, 1024, MSG_NOSIGNAL);
+        if (bytesReceived < 0)
             exit(0); //TODO сделать обработку ошибок
 
         std::cout << "bytesReceived: " << bytesReceived << std::endl;
@@ -38,8 +38,7 @@ namespace apps::client
 
     void ClientTcpTransport::send(const std::string &data)
     {
-        std::string str = "123";
-        ::send(_socketFd, str.data(), str.size(), MSG_NOSIGNAL); //чтобы не прилетал SIG_PIPE //todo почему ::
+        ::send(_socketFd, data.data(), data.size(), MSG_NOSIGNAL); //чтобы не прилетал SIG_PIPE //todo почему ::
 
     }
 

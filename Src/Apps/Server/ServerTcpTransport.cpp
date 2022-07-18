@@ -3,12 +3,14 @@
 #include <iostream>
 #include <sys/epoll.h>
 #include <unistd.h>
+#include <vector>
+#include <map>
 
 namespace apps::server
 {
     ServerTcpTransport::ServerTcpTransport(std::string&& selfIp, uint32_t selfPort): ServerTransport(std::move(selfIp), selfPort)
     {
-        int _serverSocketFd = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
+        _serverSocketFd = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
 
         if(bind(_serverSocketFd, (sockaddr*)(&_serverSocketAddress), _serverSocketAddressSize) == -1)
             exit(0);
@@ -26,36 +28,43 @@ namespace apps::server
 
         int epoll = epoll_create1(0);//todo нужно ли использовать epoll_create()
 
-        epoll_event event;
+        std::map<int, epoll_event> events;//todo наверно нужно создать, чтобы на перетерлись в памяти ивенты
+        epoll_event event{};
         event.data.fd = _serverSocketFd;
         event.events = EPOLLIN;
+        events[event.data.fd] = event;
 
-        epoll_ctl(epoll, EPOLL_CTL_ADD, _serverSocketFd, &event);
+        int res = epoll_ctl(epoll, EPOLL_CTL_ADD, _serverSocketFd, &events[event.data.fd]);
 
         while (!_sigIntReceived)
         {
-            epoll_event events[255]; //todo убрать волшебное число
-            int n = epoll_wait(epoll, events, 255, -1);
+            epoll_event activeEvents[255]; //todo убрать волшебное число
+            int n = epoll_wait(epoll, activeEvents, 255, -1);
             for(uint32_t i = 0; i < n; ++i)
             {
-                if (events[i].data.fd == _serverSocketFd)
+                if (activeEvents[i].data.fd == _serverSocketFd)
                 {
                     int peerSocket = accept(_serverSocketFd, nullptr, nullptr);
-                    epoll_ctl(epoll, EPOLL_CTL_ADD, peerSocket, &events[i]);
+                    event.data.fd = peerSocket;
+                    event.events = EPOLLIN;
+                    events[event.data.fd] = event;
+                    epoll_ctl(epoll, EPOLL_CTL_ADD, peerSocket, &events[event.data.fd]);
                 }
                 else
                 {
                     char buffer[1024];
-                    ssize_t bytesReceived = recv(events[i].data.fd, buffer, 1024, MSG_NOSIGNAL);
-                    if (bytesReceived == 0 && errno != EAGAIN)//todo что за ворое условие
+                    ssize_t bytesReceived = recv(activeEvents[i].data.fd, buffer, 1024, MSG_NOSIGNAL);
+                    if (bytesReceived == 0 && errno != EAGAIN)//todo что за второе условие
                     {
-                        shutdown(events[i].data.fd, SHUT_RDWR);
-                        close(events[i].data.fd);
+                        shutdown(activeEvents[i].data.fd, SHUT_RDWR);
+                        close(activeEvents[i].data.fd);
+                        events.erase(event.data.fd);
                     }
                     else if (bytesReceived > 0)
                     {
                         std::cout << "bytesReceived: " << bytesReceived << std::endl;
-                        send(buffer, events[i].data.fd);
+                        std::cout << "message: " << buffer << std::endl;
+                        send(buffer, activeEvents[i].data.fd);
                     }
                 }
             }
@@ -64,8 +73,7 @@ namespace apps::server
 
     void ServerTcpTransport::send(const std::string &data, int peerSocketFd)
     {
-        std::string str = "12345";
-        ::send(peerSocketFd, str.data(), str.size(), MSG_NOSIGNAL); //чтобы не прилетал SIG_PIPE //todo почему ::
+        ::send(peerSocketFd, data.data(), data.size(), MSG_NOSIGNAL); //чтобы не прилетал SIG_PIPE
 
     }
 

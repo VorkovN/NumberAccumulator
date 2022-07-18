@@ -8,7 +8,7 @@ namespace apps::client
 {
     ClientUdpTransport::ClientUdpTransport(std::string&& serverIp, uint32_t serverPort): ClientTransport(std::move(serverIp), serverPort)
     {
-        _socketFd = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
+        _socketFd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
         if (_socketFd == -1)
             exit(0); //TODO сделать обработку ошибок
     }
