@@ -9,7 +9,6 @@
 void sig_handler(int sig)
 {
     apps::client::ClientFacade::_sigIntReceived = true;
-    apps::client::ClientTransport::_sigIntReceived = true;
 }
 
 int main(int argc, char** argv)

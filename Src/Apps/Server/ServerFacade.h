@@ -18,8 +18,14 @@ namespace apps::server
         void start();
 
     private:
-        std::unique_ptr<ServerTransport> _udpTransport;
-        std::unique_ptr<ServerTransport> _tcpTransport;
+        void handleReceivedConnection(ServerTransport* transport);
+
+    public:
+        static bool _sigIntReceived;
+
+    private:
+        std::shared_ptr<ServerTransport> _udpTransport;
+        std::shared_ptr<ServerTransport> _tcpTransport;
 
     };
 

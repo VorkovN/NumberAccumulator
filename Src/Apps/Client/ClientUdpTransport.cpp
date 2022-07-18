@@ -2,7 +2,7 @@
 #include <unistd.h>
 #include "ClientUdpTransport.h"
 
-
+#include "Constants.h"
 
 namespace apps::client
 {
@@ -18,24 +18,22 @@ namespace apps::client
         std::cout << "~ClientUdpTransport()" << std::endl;
     }
 
-    void ClientUdpTransport::receive()
+    std::optional<std::string> ClientUdpTransport::receive()
     {
-        const ssize_t bufferSize = 1024; //todo нужно ли сделать больше
-        char buffer[bufferSize];
-        //todo можно ли в один поток с хендлером?
-        while (!_sigIntReceived)
-        {
-            ssize_t bytesReceived = recvfrom(_socketFd, (void*)buffer, sizeof(buffer), 0, nullptr, nullptr);
-            if (bytesReceived < 0)
-                return; //TODO сделать обработку ошибок
-            std::cout << "bytesReceived: " << bytesReceived << std::endl;
-            std::cout << buffer << std::endl; //todo вынести в отдельный метод
-        }
+        char buffer[INPUT_BUFFER_SIZE];
+
+        int bytesReceived = recvfrom(_socketFd, (void*)buffer, sizeof(buffer), 0, nullptr, nullptr);
+        if (bytesReceived < 0)
+            return {};
+
+        return buffer;
+
+
     }
 
-    void ClientUdpTransport::send(const std::string &data)
+    void ClientUdpTransport::send(const std::string& sendData)
     {
-        ssize_t bytesSent = sendto(_socketFd, data.data(), data.size(), MSG_NOSIGNAL,(struct sockaddr*)&_socketAddress, _socketAddressSize);
+        int bytesSent = sendto(_socketFd, sendData.data(), sendData.size(), MSG_NOSIGNAL,(struct sockaddr*)&_socketAddress, _socketAddressSize);
         if (bytesSent < 0)
             return; //TODO сделать обработку ошибок
     }

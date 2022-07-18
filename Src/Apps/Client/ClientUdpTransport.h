@@ -11,9 +11,8 @@ namespace apps::client
     public:
         ClientUdpTransport(std::string&& serverIp, uint32_t serverPort);
         ~ClientUdpTransport() override;
-        void receive() override;
-        void send(const std::string& data) override;
-
+        std::optional<std::string> receive() override;
+        void send(const std::string& sendData) override;
     };
 
 }

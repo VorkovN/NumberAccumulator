@@ -19,7 +19,8 @@ namespace apps::client
 
     private:
         void handleInput();
-
+        void handleReceive();
+        void printServerAnswer(const std::string& serverAnswer);
     public:
         static bool _sigIntReceived;
 

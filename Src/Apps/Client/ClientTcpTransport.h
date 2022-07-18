@@ -14,9 +14,8 @@ namespace apps::client
     public:
         ClientTcpTransport(std::string&& serverIp, uint32_t serverPort);
         ~ClientTcpTransport();
-        void receive() override;
-        void send(const std::string& data) override;
-
+        std::optional<std::string> receive() override;
+        void send(const std::string& sendData) override;
     };
 
 }

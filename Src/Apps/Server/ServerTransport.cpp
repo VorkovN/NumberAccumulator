@@ -9,8 +9,6 @@
 
 namespace apps::server
 {
-    bool ServerTransport::_sigIntReceived = false;
-
     ServerTransport::ServerTransport(std::string &&serverIp, uint32_t serverPort): _serverIp(std::move(serverIp)), _serverPort(serverPort)
     {
         bzero(&_serverSocketAddress, sizeof(_serverSocketAddress));
@@ -27,9 +25,4 @@ namespace apps::server
         close(_serverSocketFd);
     }
 
-
-    void ServerTransport::start()
-    {
-        receive();
-    }
 }

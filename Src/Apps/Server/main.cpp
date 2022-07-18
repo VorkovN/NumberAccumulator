@@ -7,7 +7,7 @@
 
 void sig_handler(int sig)
 {
-    apps::server::ServerTransport::_sigIntReceived = true;
+    apps::server::ServerFacade::_sigIntReceived = true;
 }
 
 int main(int argc, char** argv)

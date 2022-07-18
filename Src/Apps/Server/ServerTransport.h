@@ -1,11 +1,10 @@
 #ifndef NUMBERACCUMULATOR_APPS_SERVER_SERVERTRANSPORT_H
 #define NUMBERACCUMULATOR_APPS_SERVER_SERVERTRANSPORT_H
 
+#include <any>
 #include <netinet/in.h>
-
+#include <optional>
 #include <string>
-
-//#include <Interfaces/ITransport.h>
 
 namespace apps::server
 {
@@ -13,13 +12,17 @@ namespace apps::server
     class ServerTransport
     {
     public:
-        ServerTransport(std::string&& serverIp, uint32_t serverPort);
-        virtual ~ServerTransport();
-        void start();
-        virtual void receive() = 0;
+        struct MiddleLayerData
+        {
+            std::string sendData;
+            std::any peerInformation;
+        };
 
     public:
-        static bool _sigIntReceived;
+        ServerTransport(std::string&& serverIp, uint32_t serverPort);
+        virtual ~ServerTransport();
+        virtual std::optional<MiddleLayerData> receive() = 0;
+        virtual void send(MiddleLayerData middleLayerData) = 0;
 
     protected:
         int _serverSocketFd;

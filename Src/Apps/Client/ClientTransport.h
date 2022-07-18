@@ -2,9 +2,8 @@
 #define NUMBERACCUMULATOR_APPS_CLIENT_CLIENTTRANSPORT_H
 
 #include <netinet/in.h>
+#include <optional>
 #include <string>
-
-//#include <Interfaces/ITransport.h>
 
 namespace apps::client
 {
@@ -14,12 +13,8 @@ namespace apps::client
     public:
         ClientTransport(std::string&& serverIp, uint32_t serverPort);
         virtual ~ClientTransport();
-        void start();
-        virtual void send(const std::string& data) = 0;
-        virtual void receive() = 0;
-
-    public:
-        static bool _sigIntReceived;
+        virtual std::optional<std::string> receive() = 0;
+        virtual void send(const std::string& sendData) = 0;
 
     protected:
         int _socketFd;
@@ -27,6 +22,7 @@ namespace apps::client
         const std::string _serverIp;
         const uint32_t _serverPort;
         socklen_t _socketAddressSize;
+
     };
 
 }

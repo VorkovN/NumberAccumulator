@@ -1,7 +1,9 @@
 #include "ServerUdpTransport.h"
 
 #include <iostream>
+#include <array>
 
+#include "Constants.h"
 
 namespace apps::server
 {
@@ -18,34 +20,24 @@ namespace apps::server
         std::cout << "~ServerUdpTransport()" << std::endl;
     }
 
-    void ServerUdpTransport::receive()
+    std::optional<ServerTransport::MiddleLayerData> ServerUdpTransport::receive()
     {
-        sockaddr_in peerSocketAddress{};
-        socklen_t peerSocketAddressSize = sizeof(sockaddr_in);
-        const ssize_t bufferSize = 1024; //todo нужно ли сделать больше
-        char buffer[bufferSize];
-        //todo можно ли в один поток с хендлером?
-        while (!_sigIntReceived)
-        {
-            int bytesReceived = recvfrom(_serverSocketFd, buffer, 1024, MSG_NOSIGNAL, (sockaddr*)&peerSocketAddress, &peerSocketAddressSize);
-            if (bytesReceived == -1)
-                continue; //TODO сделать обработку ошибок
-            std::cout << "bytesReceived: " << bytesReceived << std::endl;
-            std::cout << buffer << std::endl; //todo вынести в отдельный метод
-            std::string testStr = "qwerty";
-            send(testStr, std::move(peerSocketAddress)); //todo прочем можно и убрать move
-        }
+        sockaddr peerSocketAddress{};
+        socklen_t peerSocketAddressSize = sizeof(sockaddr);
+        std::array<char, INPUT_BUFFER_SIZE> buffer{};
+
+        int bytesReceived = recvfrom(_serverSocketFd, buffer.data(), buffer.size(), MSG_NOSIGNAL, &peerSocketAddress, &peerSocketAddressSize);
+        if (bytesReceived == -1)
+            return {};
+
+        return MiddleLayerData{buffer.data(), peerSocketAddress};
     }
 
 
-//    void ServerUdpTransport::send(const std::string &data)
-//    {
-//
-//    }
-
-    void ServerUdpTransport::send(const std::string &data, sockaddr_in&& peerSocketAddress)
+    void ServerUdpTransport::send(MiddleLayerData middleLayerData)
     {
-        ssize_t bytesSent = sendto(_serverSocketFd, data.data(), data.size(), MSG_NOSIGNAL, (sockaddr*)&peerSocketAddress, sizeof(peerSocketAddress));
+        sockaddr peerSocketAddress = std::any_cast<sockaddr>(middleLayerData.peerInformation);
+        int bytesSent = sendto(_serverSocketFd, middleLayerData.sendData.data(), middleLayerData.sendData.size(), MSG_NOSIGNAL, &peerSocketAddress, sizeof(peerSocketAddress));
         if (bytesSent < 0)
             return; //TODO сделать обработку ошибок
     }

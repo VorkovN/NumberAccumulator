@@ -9,6 +9,7 @@ namespace libs
 {
 class NumbersParser
 {
+public:
     static std::optional<int32_t> countNumbersInString(std::string_view inputString)
     {
         return {}; //TODO реализовать после уточнения формата входных данных

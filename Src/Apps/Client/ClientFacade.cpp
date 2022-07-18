@@ -20,8 +20,22 @@ namespace apps::client
 
     void ClientFacade::start()
     {
-        std::thread(&ClientTransport::start, _transport.get()).detach();
+        std::thread(&ClientFacade::handleReceive, this).detach();
         handleInput();
+    }
+
+    void ClientFacade::handleReceive()
+    {
+        while (!_sigIntReceived)
+        {
+            if (auto printDataOpt = _transport->receive(); printDataOpt.has_value())
+                printServerAnswer(printDataOpt.value());
+        }
+    }
+
+    void ClientFacade::printServerAnswer(const std::string &serverAnswer)
+    {
+        std::cout << serverAnswer << std::endl;
     }
 
     void ClientFacade::handleInput()
@@ -34,4 +48,6 @@ namespace apps::client
             _transport->send(inputString);
         }
     }
+
+
 }

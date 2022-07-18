@@ -3,6 +3,9 @@
 
 #include "ServerTransport.h"
 
+#include <map>
+#include <sys/epoll.h>
+
 namespace apps::server
 {
 
@@ -11,10 +14,12 @@ namespace apps::server
     public:
         ServerTcpTransport(std::string&& selfIp, uint32_t selfPort);
         ~ServerTcpTransport() override;
-        void receive() override;
-//        void send(const std::string& data) override;
-        void send(const std::string& data, int peerSocketFd);
+        std::optional<MiddleLayerData> receive() override;
+        void send(MiddleLayerData middleLayerData) override;
 
+    private:
+        int epoll;
+        std::map<int, epoll_event> events;//todo наверно нужно создать, чтобы на перетерлись в памяти ивенты
     };
 
 }

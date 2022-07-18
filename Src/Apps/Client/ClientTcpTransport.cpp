@@ -6,6 +6,8 @@
 #include <arpa/inet.h>
 #include <cstring>
 
+#include "Constants.h"
+
 namespace apps::client
 {
     ClientTcpTransport::ClientTcpTransport(std::string&& serverIp, uint32_t serverPort): ClientTransport(std::move(serverIp), serverPort)
@@ -23,23 +25,22 @@ namespace apps::client
         std::cout << "~ClientTcpTransport()" << std::endl;
     }
 
-    void ClientTcpTransport::receive()
+    std::optional<std::string> ClientTcpTransport::receive()
     {
-        const size_t bufferSize = 1024; //todo нужно ли сделать больше
-        char buffer[bufferSize];
+        char buffer[INPUT_BUFFER_SIZE];
 
-        int bytesReceived = recv(_socketFd, buffer, 1024, MSG_NOSIGNAL);
+        int bytesReceived = recv(_socketFd, buffer, INPUT_BUFFER_SIZE, MSG_NOSIGNAL);
         if (bytesReceived < 0)
-            exit(0); //TODO сделать обработку ошибок
+            return {};
 
-        std::cout << "bytesReceived: " << bytesReceived << std::endl;
-        std::cout << buffer << std::endl;
+        return buffer;
     }
 
-    void ClientTcpTransport::send(const std::string &data)
+    void ClientTcpTransport::send(const std::string& sendData)
     {
-        ::send(_socketFd, data.data(), data.size(), MSG_NOSIGNAL); //чтобы не прилетал SIG_PIPE //todo почему ::
-
+        int bytesSent = ::send(_socketFd, sendData.data(), sendData.size(), MSG_NOSIGNAL); //чтобы не прилетал SIG_PIPE //todo почему ::
+        if (bytesSent < 0)
+            return; //TODO сделать обработку ошибок
     }
 
 }

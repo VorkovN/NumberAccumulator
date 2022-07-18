@@ -9,6 +9,7 @@
 
 namespace apps::server
 {
+    bool ServerFacade::_sigIntReceived = false;
 
     ServerFacade::ServerFacade(ServerSettings&& settings)
     {
@@ -18,7 +19,19 @@ namespace apps::server
 
     void ServerFacade::start()
     {
-        std::thread(&ServerTransport::start, _udpTransport.get()).detach();
-        _tcpTransport->start();
+        std::thread(&ServerFacade::handleReceivedConnection, this, _udpTransport.get()).detach();
+        handleReceivedConnection(_tcpTransport.get());
+    }
+
+    void ServerFacade::handleReceivedConnection(ServerTransport* transport)
+    {
+        while (!_sigIntReceived)
+        {
+            auto receivedDataOpt = transport->receive();
+            if (!receivedDataOpt.has_value())
+                continue;
+            libs::NumbersParser::countNumbersInString(receivedDataOpt.value().sendData);
+            transport->send(receivedDataOpt.value());
+        }
     }
 }

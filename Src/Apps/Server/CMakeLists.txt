@@ -6,6 +6,6 @@ file(GLOB sources ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 
 add_executable(${PROJECT_NAME} ${sources} ${headers})
 
-target_link_libraries(${PROJECT_NAME} Interfaces Libs)
+target_link_libraries(${PROJECT_NAME} Libs)
 
 install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_SOURCE_DIR}/bin/apps)
