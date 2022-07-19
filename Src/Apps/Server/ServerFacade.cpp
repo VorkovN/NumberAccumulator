@@ -31,7 +31,7 @@ namespace apps::server
         catch (const std::exception& err)
         {
             std::cerr << err.what() << std::endl;
-            return;
+            return; //в случае ошибки инициализации не запускаем циклы работы транспортов
         }
 
         std::thread(&ServerFacade::handleReceivedConnection, this, _udpTransport.get()).detach();
@@ -45,16 +45,31 @@ namespace apps::server
             auto receivedDataOpt = transport->receive();
             if (!receivedDataOpt.has_value())
                 continue;
+
             std::string answer = countNumbersInString(receivedDataOpt.value().sendData);
-            transport->send({answer, receivedDataOpt.value().peerInformation});
+
+            try
+            {
+                bool sendingResult = transport->send({answer, receivedDataOpt.value().peerInformation});;
+                if (!sendingResult)
+                    std::cerr << "Send package error" << std::endl;
+            }
+            catch (const std::bad_any_cast& err)
+            {
+                std::cerr << "Unable to apply any_cast" << std::endl;
+                _needToKillProgram = true; // если каст упал один раз, то он будет падать всегда, необходимо мягко завершить работу приложения
+            }
         }
     }
 
     std::string ServerFacade::countNumbersInString(std::string_view inputString)
     {
         auto sortedNumbers = libs::NumbersParser::getNumbersFromString(inputString);
+
         int sum = std::accumulate(sortedNumbers.begin(), sortedNumbers.end(), 0);
+
         std::string answer = makeAnswerString(std::move(sortedNumbers), sum);
+
         return answer;
     }
 

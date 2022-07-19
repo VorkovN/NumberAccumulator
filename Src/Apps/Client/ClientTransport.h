@@ -15,7 +15,7 @@ namespace apps::client
         virtual ~ClientTransport();
         virtual void init() = 0;
         virtual std::optional<std::string> receive() = 0;
-        virtual void send(const std::string& sendData) = 0;
+        virtual bool send(const std::string& sendData) = 0;
 
     protected:
         int _socketFd;

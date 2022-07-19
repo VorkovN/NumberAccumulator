@@ -12,10 +12,13 @@ class NumbersParser
 public:
     static std::set<int> getNumbersFromString(std::string_view inputString)
     {
-        std::set<int> foundNumbers;
-
         if (inputString.empty())
-            return foundNumbers;
+            return {};
+
+        if (inputString.size() == 1 && inputString.front() >= '0' && inputString.front() <= '9')
+            return {atoi(&inputString.front())};
+
+        std::set<int> foundNumbers;
 
         auto iteratorFirst = inputString.begin();
         auto iteratorLast = inputString.begin()+1;

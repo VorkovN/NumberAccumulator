@@ -16,7 +16,7 @@ namespace apps::server
         ~ServerTcpTransport() override;
         void init() override;
         std::optional<MiddleLayerData> receive() override;
-        void send(MiddleLayerData middleLayerData) override;
+        bool send(MiddleLayerData middleLayerData) override;
 
     private:
         int _epoll;

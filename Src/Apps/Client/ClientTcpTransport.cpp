@@ -2,9 +2,8 @@
 
 #include <iostream>
 #include <utility>
-#include <unistd.h>
 #include <arpa/inet.h>
-#include <cstring>
+#include <array>
 
 #include "Constants.h"
 
@@ -18,11 +17,11 @@ namespace apps::client
     void ClientTcpTransport::init()
     {
         if (_socketFd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP); _socketFd == -1)
-            throw std::logic_error("ClientTcpTransport: socket failed");
+            throw std::logic_error("ClientTcpTransport: socket error");
 
 
         if (connect(_socketFd, (struct sockaddr *)&_socketAddress, _socketAddressSize) == -1)
-            throw std::logic_error("ClientTcpTransport: connect failed");
+            throw std::logic_error("ClientTcpTransport: connect error");
 
     }
 
@@ -33,20 +32,22 @@ namespace apps::client
 
     std::optional<std::string> ClientTcpTransport::receive()
     {
-        char buffer[INPUT_BUFFER_SIZE];
+        std::array<char, INPUT_BUFFER_SIZE> buffer{};
 
-        int bytesReceived = recv(_socketFd, buffer, INPUT_BUFFER_SIZE, MSG_NOSIGNAL);
-        if (bytesReceived < 0)
+        ssize_t bytesReceived = recv(_socketFd, buffer.data(), buffer.size(), MSG_NOSIGNAL);
+        if (bytesReceived == -1)
             return {};
 
-        return buffer;
+        return buffer.data();
     }
 
-    void ClientTcpTransport::send(const std::string& sendData)
+    bool ClientTcpTransport::send(const std::string& sendData)
     {
-        int bytesSent = ::send(_socketFd, sendData.data(), sendData.size(), MSG_NOSIGNAL); //чтобы не прилетал SIG_PIPE //todo почему ::
-        if (bytesSent < 0)
-            return; //TODO сделать обработку ошибок
+        ssize_t bytesSent = ::send(_socketFd, sendData.data(), sendData.size(), MSG_NOSIGNAL);
+        if (bytesSent == -1)
+            return false;
+
+        return true;
     }
 
 }

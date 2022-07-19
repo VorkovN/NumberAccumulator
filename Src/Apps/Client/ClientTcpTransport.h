@@ -16,7 +16,7 @@ namespace apps::client
         ~ClientTcpTransport() override;
         void init() override;
         std::optional<std::string> receive() override;
-        void send(const std::string& sendData) override;
+        bool send(const std::string& sendData) override;
     };
 
 }

@@ -23,7 +23,7 @@ namespace apps::server
         virtual ~ServerTransport();
         virtual void init() = 0;
         virtual std::optional<MiddleLayerData> receive() = 0;
-        virtual void send(MiddleLayerData middleLayerData) = 0;
+        virtual bool send(MiddleLayerData middleLayerData) = 0;
 
     protected:
         int _serverSocketFd;

@@ -25,8 +25,8 @@ namespace apps::server
         static bool _needToKillProgram;
 
     private:
-        std::shared_ptr<ServerTransport> _udpTransport;
-        std::shared_ptr<ServerTransport> _tcpTransport;
+        std::unique_ptr<ServerTransport> _udpTransport;
+        std::unique_ptr<ServerTransport> _tcpTransport;
 
     };
 

@@ -38,5 +38,13 @@ namespace tests::libs
         ASSERT_EQ(resultSet, referenceSet );
     }
 
+    TEST(getNumbersFromStringTest, oneSimbolTest)
+    {
+        std::string testString = "7";
+        std::set<int> referenceSet = {7};
+        std::set<int> resultSet = ::libs::NumbersParser::getNumbersFromString(testString);
+        ASSERT_EQ(resultSet, referenceSet );
+    }
+
 }
 #endif

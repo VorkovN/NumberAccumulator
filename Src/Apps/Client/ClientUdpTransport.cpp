@@ -1,5 +1,6 @@
 #include <iostream>
 #include <unistd.h>
+#include <array>
 #include "ClientUdpTransport.h"
 
 #include "Constants.h"
@@ -14,8 +15,7 @@ namespace apps::client
     void ClientUdpTransport::init()
     {
         if (_socketFd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP); _socketFd == -1)
-            throw std::logic_error("ClientUdpTransport: socket failed");
-
+            throw std::logic_error("ClientUdpTransport: socket error");
     }
 
     ClientUdpTransport::~ClientUdpTransport()
@@ -25,22 +25,22 @@ namespace apps::client
 
     std::optional<std::string> ClientUdpTransport::receive()
     {
-        char buffer[INPUT_BUFFER_SIZE];
+        std::array<char, INPUT_BUFFER_SIZE> buffer{};
 
-        int bytesReceived = recvfrom(_socketFd, (void*)buffer, sizeof(buffer), 0, nullptr, nullptr);
-        if (bytesReceived < 0)
+        ssize_t bytesReceived = recvfrom(_socketFd, buffer.data(), buffer.size(), MSG_NOSIGNAL, nullptr, nullptr);
+        if (bytesReceived == -1)
             return {};
 
-        return buffer;
-
-
+        return buffer.data();
     }
 
-    void ClientUdpTransport::send(const std::string& sendData)
+    bool ClientUdpTransport::send(const std::string& sendData)
     {
-        int bytesSent = sendto(_socketFd, sendData.data(), sendData.size(), MSG_NOSIGNAL,(struct sockaddr*)&_socketAddress, _socketAddressSize);
-        if (bytesSent < 0)
-            return; //TODO сделать обработку ошибок
+        ssize_t bytesSent = sendto(_socketFd, sendData.data(), sendData.size(), MSG_NOSIGNAL,(struct sockaddr*)&_socketAddress, _socketAddressSize);
+        if (bytesSent == -1)
+            return false;
+
+        return true;
     }
 
 }

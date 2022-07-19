@@ -18,16 +18,16 @@ namespace apps::server
     void ServerTcpTransport::init()
     {
         if (_serverSocketFd = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP ); _serverSocketFd == -1)
-            throw std::logic_error("ServerTcpTransport: socket failed");
+            throw std::logic_error("ServerTcpTransport: socket error");
 
         if(bind(_serverSocketFd, (sockaddr*)(&_serverSocketAddress), _serverSocketAddressSize) == -1)
-            throw std::logic_error("ServerTcpTransport: bind failed");
+            throw std::logic_error("ServerTcpTransport: bind error");
 
         if(listen(_serverSocketFd, SOMAXCONN) == -1)
-            throw std::logic_error("ServerTcpTransport: listen failed");
+            throw std::logic_error("ServerTcpTransport: listen error");
 
         if (_epoll = epoll_create1(0); _epoll == -1)
-            throw std::logic_error("ServerTcpTransport: epoll_create1 failed");
+            throw std::logic_error("ServerTcpTransport: epoll_create1 error");
 
         epoll_event event{};
         event.data.fd = _serverSocketFd;
@@ -35,7 +35,7 @@ namespace apps::server
         _events[event.data.fd] = event;
 
         if (epoll_ctl(_epoll, EPOLL_CTL_ADD, _serverSocketFd, &_events[event.data.fd]) == -1)
-            throw std::logic_error("ServerTcpTransport: epoll_ctl failed");
+            throw std::logic_error("ServerTcpTransport: epoll_ctl error");
 
     }
 
@@ -47,47 +47,72 @@ namespace apps::server
     std::optional<ServerTransport::MiddleLayerData> ServerTcpTransport::receive()
     {
         epoll_event activeEvents[MAX_EPOLL_EVENTS];
-        int n = epoll_wait(_epoll, activeEvents, MAX_EPOLL_EVENTS, -1);
-        for(uint32_t i = 0; i < n; ++i)
+        int activeEventsCount = epoll_wait(_epoll, activeEvents, MAX_EPOLL_EVENTS, -1);
+        if (activeEventsCount == -1)
+            return {};
+
+        for(uint32_t i = 0; i < activeEventsCount; ++i)
         {
             epoll_event event{};
 
-            if (activeEvents[i].data.fd == _serverSocketFd)
+            if (activeEvents[i].data.fd == _serverSocketFd) //при получении события на сервер сокет, добавляем новый сокет
             {
                 int peerSocket = accept(_serverSocketFd, nullptr, nullptr);
+                if (peerSocket == -1)
+                {
+                    std::cout << "ServerTcpTransport: accept exception";
+                    continue;
+                }
 
                 event.data.fd = peerSocket;
                 event.events = EPOLLIN;
                 _events[event.data.fd] = event;
 
-                epoll_ctl(_epoll, EPOLL_CTL_ADD, peerSocket, &_events[event.data.fd]);
+                int epollCtlResult = epoll_ctl(_epoll, EPOLL_CTL_ADD, peerSocket, &_events[event.data.fd]);
+                if (epollCtlResult == -1)
+                {
+                    std::cout << "ServerTcpTransport: epoll_ctl exception";
+                    continue;
+                }
             }
-            else
+            else //при получении события на обычный сокет, читаем из этого сокета
             {
                 std::array<char, INPUT_BUFFER_SIZE> buffer{};;
                 ssize_t bytesReceived = recv(activeEvents[i].data.fd, buffer.data(), buffer.size(), MSG_NOSIGNAL);
-                if (bytesReceived == 0 && errno != EAGAIN)
+
+                if (bytesReceived == -1)
+                {
+                    std::cout << "ServerTcpTransport: epoll_ctl exception";
+                    continue;
+                }
+
+                if (bytesReceived > 0)
+                {
+                    int kostyl = activeEvents[i].data.fd; //необходимо по причине, что невозможно передать в std::any упакованное поле
+                    return ServerTransport::MiddleLayerData{buffer.data(), kostyl};
+                }
+
+                if (bytesReceived == 0 && errno != EAGAIN) // если произошло событие на сокете, но данных для чтения в нем нет, значит сокет завершил соединение
                 {
                     shutdown(activeEvents[i].data.fd, SHUT_RDWR);
                     close(activeEvents[i].data.fd);
                     _events.erase(event.data.fd);
                 }
-                else if (bytesReceived > 0)
-                {
-                    int kostyl = activeEvents[i].data.fd;
-                    return ServerTransport::MiddleLayerData{buffer.data(), kostyl};
-                }
+
             }
         }
         return {};
     }
 
-    void ServerTcpTransport::send(MiddleLayerData middleLayerData)
+    bool ServerTcpTransport::send(MiddleLayerData middleLayerData)
     {
         int peerSocketFd = std::any_cast<int>(middleLayerData.peerInformation);
-        int bytesSent = ::send(peerSocketFd, middleLayerData.sendData.data(), middleLayerData.sendData.size(), MSG_NOSIGNAL);
-        if (bytesSent < 0)
-            return;
+
+        ssize_t bytesSent = ::send(peerSocketFd, middleLayerData.sendData.data(), middleLayerData.sendData.size(), MSG_NOSIGNAL);
+        if (bytesSent == -1)
+            return false;
+
+        return true;
     }
 
 }

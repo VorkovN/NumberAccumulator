@@ -17,10 +17,10 @@ namespace apps::server
     void ServerUdpTransport::init()
     {
         if (_serverSocketFd = socket( AF_INET, SOCK_DGRAM, IPPROTO_UDP ); _serverSocketFd == -1)
-            throw std::logic_error("ServerUdpTransport: socket failed");
+            throw std::logic_error("ServerUdpTransport: socket error");
 
         if(bind(_serverSocketFd, (sockaddr*)(&_serverSocketAddress), _serverSocketAddressSize) == -1)
-            throw std::logic_error("ServerUdpTransport: bind failed");
+            throw std::logic_error("ServerUdpTransport: bind error");
     }
 
     ServerUdpTransport::~ServerUdpTransport()
@@ -34,20 +34,22 @@ namespace apps::server
         socklen_t peerSocketAddressSize = sizeof(sockaddr);
         std::array<char, INPUT_BUFFER_SIZE> buffer{};
 
-        int bytesReceived = recvfrom(_serverSocketFd, buffer.data(), buffer.size(), MSG_NOSIGNAL, &peerSocketAddress, &peerSocketAddressSize);
+        ssize_t bytesReceived = recvfrom(_serverSocketFd, buffer.data(), buffer.size(), MSG_NOSIGNAL, &peerSocketAddress, &peerSocketAddressSize);
         if (bytesReceived == -1)
-            return {};
+            std::cout << "ServerUdpTransport: recvfrom exception" << std::endl;
 
         return MiddleLayerData{buffer.data(), peerSocketAddress};
     }
 
-
-    void ServerUdpTransport::send(MiddleLayerData middleLayerData)
+    bool ServerUdpTransport::send(MiddleLayerData middleLayerData)
     {
         sockaddr peerSocketAddress = std::any_cast<sockaddr>(middleLayerData.peerInformation);
-        int bytesSent = sendto(_serverSocketFd, middleLayerData.sendData.data(), middleLayerData.sendData.size(), MSG_NOSIGNAL, &peerSocketAddress, sizeof(peerSocketAddress));
-        if (bytesSent < 0)
-            return; //TODO сделать обработку ошибок
+
+        ssize_t bytesSent = sendto(_serverSocketFd, middleLayerData.sendData.data(), middleLayerData.sendData.size(), MSG_NOSIGNAL, &peerSocketAddress, sizeof(peerSocketAddress));
+        if (bytesSent == -1)
+            return false;
+
+        return true;
     }
 
 }

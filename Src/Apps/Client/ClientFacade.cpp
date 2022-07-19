@@ -38,8 +38,17 @@ namespace apps::client
     {
         while (!_needToKillProgram)
         {
-            if (auto printDataOpt = _transport->receive(); printDataOpt.has_value())
-                printServerAnswer(printDataOpt.value());
+            auto printDataOpt = _transport->receive();
+            if (!printDataOpt.has_value())
+            {
+                std::cerr << "Receive package error" << std::endl;
+                continue;
+            }
+
+            if (printDataOpt.value().empty())
+                _needToKillProgram = true; // если пришли пустые данные, значит это сигнал разрыва соединения
+
+            printServerAnswer(printDataOpt.value());
         }
     }
 
@@ -50,14 +59,19 @@ namespace apps::client
 
     void ClientFacade::handleInput()
     {
+        // чтобы не учитывать пробелы в строке ввода
         while (!_needToKillProgram)
         {
             std::cout << "Input your message: " << std::endl;
             std::string inputString;
-            std::cin >> inputString;
-            _transport->send(inputString);
+            std::getline(std::cin,inputString);
+
+            bool sendingResult = _transport->send(inputString);
+            if (!sendingResult)
+                std::cerr << "Send package error" << std::endl;
+
+            sleep(1); //можно и удалить, за это время успевает прийти ответ и отрисоваться на консоли
         }
     }
-
 
 }
