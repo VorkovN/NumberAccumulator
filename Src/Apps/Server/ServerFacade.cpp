@@ -38,7 +38,7 @@ namespace apps::server
         handleReceivedConnection(_tcpTransport.get());
     }
 
-    void ServerFacade::handleReceivedConnection(ServerTransport* transport)
+    void ServerFacade::handleReceivedConnection(IServerTransport* transport)
     {
         while (!_needToKillProgram)
         {
@@ -46,18 +46,19 @@ namespace apps::server
             if (!receivedDataOpt.has_value())
                 continue;
 
-            std::string answer = countNumbersInString(receivedDataOpt.value().sendData);
+            for (const auto& task: receivedDataOpt.value())
+            {
+                std::string answer = countNumbersInString(task.sendData);
 
-            try
-            {
-                bool sendingResult = transport->send({answer, receivedDataOpt.value().peerInformation});;
-                if (!sendingResult)
-                    std::cerr << "Send package error" << std::endl;
-            }
-            catch (const std::bad_any_cast& err)
-            {
-                std::cerr << "Unable to apply any_cast" << std::endl;
-                _needToKillProgram = true; // если каст упал один раз, то он будет падать всегда, необходимо мягко завершить работу приложения
+                try {
+                    bool sendingResult = transport->send({answer, task.peerInformation});
+                    if (!sendingResult)
+                        std::cerr << "Send package error" << std::endl;
+                }
+                catch (const std::bad_any_cast &err) {
+                    std::cerr << "Unable to apply any_cast" << std::endl;
+                    _needToKillProgram = true; // если каст упал один раз, то он будет падать всегда, необходимо мягко завершить работу приложения
+                }
             }
         }
     }

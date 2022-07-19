@@ -15,8 +15,7 @@ namespace apps::client
         bzero(&_socketAddress, sizeof(_socketAddress));
         _socketAddress.sin_port = htons(_serverPort);
         _socketAddress.sin_family = AF_INET;
-//        _socketAddress.sin_addr.s_addr = inet_addr(_serverIp.data());
-        _socketAddress.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+        _socketAddress.sin_addr.s_addr = inet_addr(_serverIp.data());
         _socketAddressSize = sizeof(sockaddr_in);
     }
 

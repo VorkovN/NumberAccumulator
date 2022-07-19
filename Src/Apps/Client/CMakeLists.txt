@@ -4,7 +4,7 @@ message(STATUS "building ${PROJECT_NAME}")
 file(GLOB headers ${CMAKE_CURRENT_SOURCE_DIR}/*.h)
 file(GLOB sources ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 
-add_executable(${PROJECT_NAME} ${sources} ${headers} ClientTransport.h ClientTransport.cpp Constants.h)
+add_executable(${PROJECT_NAME} ${sources} ${headers} ClientTransport.h ClientTransport.cpp Constants.h IClientTransport.h)
 
 target_link_libraries(${PROJECT_NAME})
 

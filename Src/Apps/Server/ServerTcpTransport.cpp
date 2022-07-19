@@ -23,6 +23,10 @@ namespace apps::server
         if(bind(_serverSocketFd, (sockaddr*)(&_serverSocketAddress), _serverSocketAddressSize) == -1)
             throw std::logic_error("ServerTcpTransport: bind error");
 
+        int optVal = 1;
+        if(setsockopt(_serverSocketFd, SOL_SOCKET, SO_REUSEADDR, &optVal, sizeof(optVal)) == -1)
+            throw std::logic_error("ServerTcpTransport: bind error");
+
         if(listen(_serverSocketFd, SOMAXCONN) == -1)
             throw std::logic_error("ServerTcpTransport: listen error");
 
@@ -44,12 +48,15 @@ namespace apps::server
         std::cout << "~ServerTcpTransport()" << std::endl;
     }
 
-    std::optional<ServerTransport::MiddleLayerData> ServerTcpTransport::receive()
+    std::optional<std::vector<IServerTransport::MiddleLayerData>> ServerTcpTransport::receive()
     {
         epoll_event activeEvents[MAX_EPOLL_EVENTS];
         int activeEventsCount = epoll_wait(_epoll, activeEvents, MAX_EPOLL_EVENTS, -1);
         if (activeEventsCount == -1)
             return {};
+
+        std::vector<IServerTransport::MiddleLayerData> tasks;
+        tasks.reserve(activeEventsCount);
 
         for(uint32_t i = 0; i < activeEventsCount; ++i)
         {
@@ -89,7 +96,8 @@ namespace apps::server
                 if (bytesReceived > 0)
                 {
                     int kostyl = activeEvents[i].data.fd; //необходимо по причине, что невозможно передать в std::any упакованное поле
-                    return ServerTransport::MiddleLayerData{buffer.data(), kostyl};
+                    tasks.push_back({buffer.data(), kostyl});
+                    continue;
                 }
 
                 if (bytesReceived == 0 && errno != EAGAIN) // если произошло событие на сокете, но данных для чтения в нем нет, значит сокет завершил соединение
@@ -101,7 +109,7 @@ namespace apps::server
 
             }
         }
-        return {};
+        return tasks;
     }
 
     bool ServerTcpTransport::send(MiddleLayerData middleLayerData)

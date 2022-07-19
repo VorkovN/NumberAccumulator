@@ -12,7 +12,7 @@ namespace apps::server
         ServerUdpTransport(std::string&& selfIp, uint32_t selfPort);
         ~ServerUdpTransport() override;
         void init() override;
-        std::optional<MiddleLayerData> receive() override;
+        std::optional<std::vector<IServerTransport::MiddleLayerData>> receive() override;
         bool send(MiddleLayerData middleLayerData) override;
 
     };

@@ -3,10 +3,8 @@
 
 #include <memory>
 
-//#include <Interfaces/ITransport.h>
-
 #include "ClientSettings.h"
-#include "ClientTransport.h"
+#include "IClientTransport.h"
 
 namespace apps::client
 {
@@ -26,7 +24,7 @@ namespace apps::client
         static bool _needToKillProgram;
 
     private:
-        std::unique_ptr<ClientTransport> _transport;
+        std::unique_ptr<IClientTransport> _transport;
     };
 
 }

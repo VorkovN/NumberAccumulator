@@ -5,7 +5,7 @@
 #include <set>
 
 #include "ServerSettings.h"
-#include "ServerTransport.h"
+#include "IServerTransport.h"
 
 namespace apps::server
 {
@@ -17,7 +17,7 @@ namespace apps::server
         void start();
 
     private:
-        void handleReceivedConnection(ServerTransport* transport);
+        void handleReceivedConnection(IServerTransport* transport);
         std::string countNumbersInString(std::string_view inputString);
         std::string makeAnswerString(std::set<int>&& nums, int sum);
 
@@ -25,8 +25,8 @@ namespace apps::server
         static bool _needToKillProgram;
 
     private:
-        std::unique_ptr<ServerTransport> _udpTransport;
-        std::unique_ptr<ServerTransport> _tcpTransport;
+        std::unique_ptr<IServerTransport> _udpTransport;
+        std::unique_ptr<IServerTransport> _tcpTransport;
 
     };
 

@@ -6,24 +6,17 @@
 #include <optional>
 #include <string>
 
+#include "IServerTransport.h"
+
 namespace apps::server
 {
 
-    class ServerTransport
+    class ServerTransport: public IServerTransport
     {
-    public:
-        struct MiddleLayerData
-        {
-            std::string sendData;
-            std::any peerInformation;
-        };
 
     public:
         ServerTransport(std::string&& serverIp, uint32_t serverPort);
         virtual ~ServerTransport();
-        virtual void init() = 0;
-        virtual std::optional<MiddleLayerData> receive() = 0;
-        virtual bool send(MiddleLayerData middleLayerData) = 0;
 
     protected:
         int _serverSocketFd;

@@ -21,6 +21,10 @@ namespace apps::server
 
         if(bind(_serverSocketFd, (sockaddr*)(&_serverSocketAddress), _serverSocketAddressSize) == -1)
             throw std::logic_error("ServerUdpTransport: bind error");
+
+        int optVal = 1;
+        if(setsockopt(_serverSocketFd, SOL_SOCKET, SO_REUSEADDR, &optVal, sizeof(optVal)) == -1)
+            throw std::logic_error("ServerTcpTransport: bind error");
     }
 
     ServerUdpTransport::~ServerUdpTransport()
@@ -28,7 +32,7 @@ namespace apps::server
         std::cout << "~ServerUdpTransport()" << std::endl;
     }
 
-    std::optional<ServerTransport::MiddleLayerData> ServerUdpTransport::receive()
+    std::optional<std::vector<IServerTransport::MiddleLayerData>> ServerUdpTransport::receive()
     {
         sockaddr peerSocketAddress{};
         socklen_t peerSocketAddressSize = sizeof(sockaddr);
@@ -38,7 +42,9 @@ namespace apps::server
         if (bytesReceived == -1)
             std::cout << "ServerUdpTransport: recvfrom exception" << std::endl;
 
-        return MiddleLayerData{buffer.data(), peerSocketAddress};
+        // ради красивого интерфейса и удобства обработки результатов пришлось пожертвовать адекватностью возвращаемого значения
+        // в рамках данной архитектуры приложения не вижу других вариантов реализации этого return без вектора(точнее вижу, но они мне не нравятся еще больше)
+        return std::vector<IServerTransport::MiddleLayerData>{{buffer.data(), peerSocketAddress}};
     }
 
     bool ServerUdpTransport::send(MiddleLayerData middleLayerData)

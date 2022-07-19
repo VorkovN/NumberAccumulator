@@ -15,7 +15,7 @@ namespace apps::server
         ServerTcpTransport(std::string&& selfIp, uint32_t selfPort);
         ~ServerTcpTransport() override;
         void init() override;
-        std::optional<MiddleLayerData> receive() override;
+        std::optional<std::vector<IServerTransport::MiddleLayerData>> receive() override;
         bool send(MiddleLayerData middleLayerData) override;
 
     private:

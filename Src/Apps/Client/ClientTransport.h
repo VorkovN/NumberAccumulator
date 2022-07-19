@@ -2,20 +2,18 @@
 #define NUMBERACCUMULATOR_APPS_CLIENT_CLIENTTRANSPORT_H
 
 #include <netinet/in.h>
-#include <optional>
 #include <string>
+
+#include "IClientTransport.h"
 
 namespace apps::client
 {
 
-    class ClientTransport
+    class ClientTransport: public IClientTransport
     {
     public:
         ClientTransport(std::string&& serverIp, uint32_t serverPort);
         virtual ~ClientTransport();
-        virtual void init() = 0;
-        virtual std::optional<std::string> receive() = 0;
-        virtual bool send(const std::string& sendData) = 0;
 
     protected:
         int _socketFd;
