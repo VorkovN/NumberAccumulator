@@ -14,12 +14,13 @@ namespace apps::server
     public:
         ServerTcpTransport(std::string&& selfIp, uint32_t selfPort);
         ~ServerTcpTransport() override;
+        void init() override;
         std::optional<MiddleLayerData> receive() override;
         void send(MiddleLayerData middleLayerData) override;
 
     private:
-        int epoll;
-        std::map<int, epoll_event> events;//todo наверно нужно создать, чтобы на перетерлись в памяти ивенты
+        int _epoll;
+        std::map<int, epoll_event> _events;
     };
 
 }

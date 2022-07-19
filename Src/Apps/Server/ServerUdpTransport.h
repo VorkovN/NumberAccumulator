@@ -11,6 +11,7 @@ namespace apps::server
     public:
         ServerUdpTransport(std::string&& selfIp, uint32_t selfPort);
         ~ServerUdpTransport() override;
+        void init() override;
         std::optional<MiddleLayerData> receive() override;
         void send(MiddleLayerData middleLayerData) override;
 

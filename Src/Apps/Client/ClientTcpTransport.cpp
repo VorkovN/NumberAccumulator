@@ -12,12 +12,18 @@ namespace apps::client
 {
     ClientTcpTransport::ClientTcpTransport(std::string&& serverIp, uint32_t serverPort): ClientTransport(std::move(serverIp), serverPort)
     {
-        _socketFd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-        if (_socketFd == -1)
-            exit(0);
+
+    }
+
+    void ClientTcpTransport::init()
+    {
+        if (_socketFd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP); _socketFd == -1)
+            throw std::logic_error("ClientTcpTransport: socket failed");
+
 
         if (connect(_socketFd, (struct sockaddr *)&_socketAddress, _socketAddressSize) == -1)
-            exit(0);
+            throw std::logic_error("ClientTcpTransport: connect failed");
+
     }
 
     ClientTcpTransport::~ClientTcpTransport()

@@ -1,5 +1,7 @@
 #include "ServerUdpTransport.h"
 
+#include <stdexcept>
+#include <exception>
 #include <iostream>
 #include <array>
 
@@ -9,10 +11,16 @@ namespace apps::server
 {
     ServerUdpTransport::ServerUdpTransport(std::string&& selfIp, uint32_t selfPort): ServerTransport(std::move(selfIp), selfPort)
     {
-        _serverSocketFd = socket( AF_INET, SOCK_DGRAM, IPPROTO_UDP );
+
+    }
+
+    void ServerUdpTransport::init()
+    {
+        if (_serverSocketFd = socket( AF_INET, SOCK_DGRAM, IPPROTO_UDP ); _serverSocketFd == -1)
+            throw std::logic_error("ServerUdpTransport: socket failed");
 
         if(bind(_serverSocketFd, (sockaddr*)(&_serverSocketAddress), _serverSocketAddressSize) == -1)
-            exit(0);
+            throw std::logic_error("ServerUdpTransport: bind failed");
     }
 
     ServerUdpTransport::~ServerUdpTransport()

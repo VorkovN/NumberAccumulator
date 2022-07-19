@@ -8,7 +8,7 @@
 
 namespace apps::client
 {
-    bool ClientFacade::_sigIntReceived = false;
+    bool ClientFacade::_needToKillProgram = false;
 
     ClientFacade::ClientFacade(ClientSettings&& settings)
     {
@@ -20,13 +20,23 @@ namespace apps::client
 
     void ClientFacade::start()
     {
+        try
+        {
+            _transport->init();
+        }
+        catch (const std::exception& err)
+        {
+            std::cerr << err.what() << std::endl;
+            return;
+        }
+
         std::thread(&ClientFacade::handleReceive, this).detach();
         handleInput();
     }
 
     void ClientFacade::handleReceive()
     {
-        while (!_sigIntReceived)
+        while (!_needToKillProgram)
         {
             if (auto printDataOpt = _transport->receive(); printDataOpt.has_value())
                 printServerAnswer(printDataOpt.value());
@@ -40,7 +50,7 @@ namespace apps::client
 
     void ClientFacade::handleInput()
     {
-        while (!_sigIntReceived)
+        while (!_needToKillProgram)
         {
             std::cout << "Input your message: " << std::endl;
             std::string inputString;

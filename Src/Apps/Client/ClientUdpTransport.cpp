@@ -8,9 +8,14 @@ namespace apps::client
 {
     ClientUdpTransport::ClientUdpTransport(std::string&& serverIp, uint32_t serverPort): ClientTransport(std::move(serverIp), serverPort)
     {
-        _socketFd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-        if (_socketFd == -1)
-            exit(0); //TODO сделать обработку ошибок
+
+    }
+
+    void ClientUdpTransport::init()
+    {
+        if (_socketFd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP); _socketFd == -1)
+            throw std::logic_error("ClientUdpTransport: socket failed");
+
     }
 
     ClientUdpTransport::~ClientUdpTransport()

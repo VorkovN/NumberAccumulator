@@ -8,7 +8,7 @@
 
 void sig_handler(int sig)
 {
-    apps::client::ClientFacade::_sigIntReceived = true;
+    apps::client::ClientFacade::_needToKillProgram = true;
 }
 
 int main(int argc, char** argv)

@@ -12,21 +12,31 @@ namespace apps::server
 {
     ServerTcpTransport::ServerTcpTransport(std::string&& selfIp, uint32_t selfPort): ServerTransport(std::move(selfIp), selfPort)
     {
-        _serverSocketFd = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
+
+    }
+
+    void ServerTcpTransport::init()
+    {
+        if (_serverSocketFd = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP ); _serverSocketFd == -1)
+            throw std::logic_error("ServerTcpTransport: socket failed");
 
         if(bind(_serverSocketFd, (sockaddr*)(&_serverSocketAddress), _serverSocketAddressSize) == -1)
-            exit(0);
+            throw std::logic_error("ServerTcpTransport: bind failed");
 
-        listen(_serverSocketFd, SOMAXCONN);
+        if(listen(_serverSocketFd, SOMAXCONN) == -1)
+            throw std::logic_error("ServerTcpTransport: listen failed");
 
-        epoll = epoll_create1(0);
+        if (_epoll = epoll_create1(0); _epoll == -1)
+            throw std::logic_error("ServerTcpTransport: epoll_create1 failed");
 
         epoll_event event{};
         event.data.fd = _serverSocketFd;
         event.events = EPOLLIN;
-        events[event.data.fd] = event;
+        _events[event.data.fd] = event;
 
-        epoll_ctl(epoll, EPOLL_CTL_ADD, _serverSocketFd, &events[event.data.fd]);
+        if (epoll_ctl(_epoll, EPOLL_CTL_ADD, _serverSocketFd, &_events[event.data.fd]) == -1)
+            throw std::logic_error("ServerTcpTransport: epoll_ctl failed");
+
     }
 
     ServerTcpTransport::~ServerTcpTransport()
@@ -37,7 +47,7 @@ namespace apps::server
     std::optional<ServerTransport::MiddleLayerData> ServerTcpTransport::receive()
     {
         epoll_event activeEvents[MAX_EPOLL_EVENTS];
-        int n = epoll_wait(epoll, activeEvents, MAX_EPOLL_EVENTS, -1);
+        int n = epoll_wait(_epoll, activeEvents, MAX_EPOLL_EVENTS, -1);
         for(uint32_t i = 0; i < n; ++i)
         {
             epoll_event event{};
@@ -48,9 +58,9 @@ namespace apps::server
 
                 event.data.fd = peerSocket;
                 event.events = EPOLLIN;
-                events[event.data.fd] = event;
+                _events[event.data.fd] = event;
 
-                epoll_ctl(epoll, EPOLL_CTL_ADD, peerSocket, &events[event.data.fd]);
+                epoll_ctl(_epoll, EPOLL_CTL_ADD, peerSocket, &_events[event.data.fd]);
             }
             else
             {
@@ -60,7 +70,7 @@ namespace apps::server
                 {
                     shutdown(activeEvents[i].data.fd, SHUT_RDWR);
                     close(activeEvents[i].data.fd);
-                    events.erase(event.data.fd);
+                    _events.erase(event.data.fd);
                 }
                 else if (bytesReceived > 0)
                 {

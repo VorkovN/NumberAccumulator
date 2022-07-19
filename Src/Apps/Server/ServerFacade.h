@@ -22,7 +22,7 @@ namespace apps::server
         std::string makeAnswerString(std::set<int>&& nums, int sum);
 
     public:
-        static bool _sigIntReceived;
+        static bool _needToKillProgram;
 
     private:
         std::shared_ptr<ServerTransport> _udpTransport;

@@ -21,8 +21,9 @@ namespace apps::client
         void handleInput();
         void handleReceive();
         void printServerAnswer(const std::string& serverAnswer);
+
     public:
-        static bool _sigIntReceived;
+        static bool _needToKillProgram;
 
     private:
         std::unique_ptr<ClientTransport> _transport;

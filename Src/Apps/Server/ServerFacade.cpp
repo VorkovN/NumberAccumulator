@@ -1,5 +1,6 @@
 #include "ServerFacade.h"
 
+#include <iostream>
 #include <numeric>
 #include <set>
 #include <sstream>
@@ -12,7 +13,7 @@
 
 namespace apps::server
 {
-    bool ServerFacade::_sigIntReceived = false;
+    bool ServerFacade::_needToKillProgram = false;
 
     ServerFacade::ServerFacade(ServerSettings&& settings)
     {
@@ -22,13 +23,24 @@ namespace apps::server
 
     void ServerFacade::start()
     {
+        try
+        {
+            _udpTransport->init();
+            _tcpTransport->init();
+        }
+        catch (const std::exception& err)
+        {
+            std::cerr << err.what() << std::endl;
+            return;
+        }
+
         std::thread(&ServerFacade::handleReceivedConnection, this, _udpTransport.get()).detach();
         handleReceivedConnection(_tcpTransport.get());
     }
 
     void ServerFacade::handleReceivedConnection(ServerTransport* transport)
     {
-        while (!_sigIntReceived)
+        while (!_needToKillProgram)
         {
             auto receivedDataOpt = transport->receive();
             if (!receivedDataOpt.has_value())

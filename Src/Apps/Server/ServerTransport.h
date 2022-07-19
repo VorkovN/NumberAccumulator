@@ -21,6 +21,7 @@ namespace apps::server
     public:
         ServerTransport(std::string&& serverIp, uint32_t serverPort);
         virtual ~ServerTransport();
+        virtual void init() = 0;
         virtual std::optional<MiddleLayerData> receive() = 0;
         virtual void send(MiddleLayerData middleLayerData) = 0;
 

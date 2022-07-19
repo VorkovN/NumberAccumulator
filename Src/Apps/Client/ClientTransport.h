@@ -13,6 +13,7 @@ namespace apps::client
     public:
         ClientTransport(std::string&& serverIp, uint32_t serverPort);
         virtual ~ClientTransport();
+        virtual void init() = 0;
         virtual std::optional<std::string> receive() = 0;
         virtual void send(const std::string& sendData) = 0;
 
