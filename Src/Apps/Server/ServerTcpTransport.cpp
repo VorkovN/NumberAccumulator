@@ -20,11 +20,11 @@ namespace apps::server
         if (_serverSocketFd = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP ); _serverSocketFd == -1)
             throw std::logic_error("ServerTcpTransport: socket error");
 
-        if(bind(_serverSocketFd, (sockaddr*)(&_serverSocketAddress), _serverSocketAddressSize) == -1)
-            throw std::logic_error("ServerTcpTransport: bind error");
-
         int optVal = 1;
         if(setsockopt(_serverSocketFd, SOL_SOCKET, SO_REUSEADDR, &optVal, sizeof(optVal)) == -1)
+            throw std::logic_error("ServerTcpTransport: bind error");
+
+        if(bind(_serverSocketFd, (sockaddr*)(&_serverSocketAddress), _serverSocketAddressSize) == -1)
             throw std::logic_error("ServerTcpTransport: bind error");
 
         if(listen(_serverSocketFd, SOMAXCONN) == -1)

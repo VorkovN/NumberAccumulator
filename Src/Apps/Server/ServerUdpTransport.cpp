@@ -19,12 +19,12 @@ namespace apps::server
         if (_serverSocketFd = socket( AF_INET, SOCK_DGRAM, IPPROTO_UDP ); _serverSocketFd == -1)
             throw std::logic_error("ServerUdpTransport: socket error");
 
-        if(bind(_serverSocketFd, (sockaddr*)(&_serverSocketAddress), _serverSocketAddressSize) == -1)
-            throw std::logic_error("ServerUdpTransport: bind error");
-
         int optVal = 1;
         if(setsockopt(_serverSocketFd, SOL_SOCKET, SO_REUSEADDR, &optVal, sizeof(optVal)) == -1)
             throw std::logic_error("ServerTcpTransport: bind error");
+
+        if(bind(_serverSocketFd, (sockaddr*)(&_serverSocketAddress), _serverSocketAddressSize) == -1)
+            throw std::logic_error("ServerUdpTransport: bind error");
     }
 
     ServerUdpTransport::~ServerUdpTransport()
