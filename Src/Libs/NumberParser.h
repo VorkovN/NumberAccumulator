@@ -10,7 +10,7 @@ namespace libs
 class NumbersParser
 {
 public:
-    static std::set<int> getNumbersFromString(std::string_view inputString)
+    static std::multiset<int> getNumbersFromString(std::string_view inputString)
     {
         if (inputString.empty())
             return {};
@@ -18,7 +18,7 @@ public:
         if (inputString.size() == 1 && inputString.front() >= '0' && inputString.front() <= '9')
             return {atoi(&inputString.front())};
 
-        std::set<int> foundNumbers;
+        std::multiset<int> foundNumbers;
 
         auto iteratorFirst = inputString.begin();
         auto iteratorLast = inputString.begin()+1;

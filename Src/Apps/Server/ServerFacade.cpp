@@ -74,7 +74,7 @@ namespace apps::server
         return answer;
     }
 
-    std::string ServerFacade::makeAnswerString(std::set<int>&& nums, int sum)
+    std::string ServerFacade::makeAnswerString(std::multiset<int>&& nums, int sum)
     {
         std::stringstream answer;
         for(auto elem: nums)

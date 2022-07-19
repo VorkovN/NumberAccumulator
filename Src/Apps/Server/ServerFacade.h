@@ -19,7 +19,7 @@ namespace apps::server
     private:
         void handleReceivedConnection(IServerTransport* transport);
         std::string countNumbersInString(std::string_view inputString);
-        std::string makeAnswerString(std::set<int>&& nums, int sum);
+        std::string makeAnswerString(std::multiset<int>&& nums, int sum);
 
     public:
         static bool _needToKillProgram;
