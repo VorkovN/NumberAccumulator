@@ -1,5 +1,8 @@
 #include "ServerFacade.h"
 
+#include <numeric>
+#include <set>
+#include <sstream>
 #include <thread>
 
 #include <Libs/NumberParser.h>
@@ -30,8 +33,26 @@ namespace apps::server
             auto receivedDataOpt = transport->receive();
             if (!receivedDataOpt.has_value())
                 continue;
-            libs::NumbersParser::countNumbersInString(receivedDataOpt.value().sendData);
-            transport->send(receivedDataOpt.value());
+            std::string answer = countNumbersInString(receivedDataOpt.value().sendData);
+            transport->send({answer, receivedDataOpt.value().peerInformation});
         }
+    }
+
+    std::string ServerFacade::countNumbersInString(std::string_view inputString)
+    {
+        auto sortedNumbers = libs::NumbersParser::getNumbersFromString(inputString);
+        int sum = std::accumulate(sortedNumbers.begin(), sortedNumbers.end(), 0);
+        std::string answer = makeAnswerString(std::move(sortedNumbers), sum);
+        return answer;
+    }
+
+    std::string ServerFacade::makeAnswerString(std::set<int>&& nums, int sum)
+    {
+        std::stringstream answer;
+        for(auto elem: nums)
+            answer << elem << ' ';
+        answer << '\n' << sum << '\n';
+
+        return answer.str();
     }
 }

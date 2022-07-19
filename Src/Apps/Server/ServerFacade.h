@@ -2,8 +2,7 @@
 #define NUMBERACCUMULATOR_APPS_SERVER_SERVERFACADE_H
 
 #include <memory>
-
-//#include <Interfaces/ITransport.h>
+#include <set>
 
 #include "ServerSettings.h"
 #include "ServerTransport.h"
@@ -19,6 +18,8 @@ namespace apps::server
 
     private:
         void handleReceivedConnection(ServerTransport* transport);
+        std::string countNumbersInString(std::string_view inputString);
+        std::string makeAnswerString(std::set<int>&& nums, int sum);
 
     public:
         static bool _sigIntReceived;
