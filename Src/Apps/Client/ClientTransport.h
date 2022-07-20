@@ -5,7 +5,7 @@
 #include <netinet/in.h>
 #include <string>
 
-#include "IClientTransport.h"
+#include "Interfaces/IClientTransport.h"
 
 namespace apps::client
 {

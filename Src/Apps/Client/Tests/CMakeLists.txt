@@ -1,6 +1,8 @@
 project(ClientTests)
 message(STATUS "building ${PROJECT_NAME}")
 
+include_directories(..)
+
 file(GLOB headers ${CMAKE_CURRENT_SOURCE_DIR}/*.h)
 file(GLOB sources ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 

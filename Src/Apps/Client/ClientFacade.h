@@ -4,7 +4,7 @@
 #include <memory>
 
 #include "ClientSettings.h"
-#include "IClientTransport.h"
+#include "Interfaces/IClientTransport.h"
 
 namespace apps::client
 {

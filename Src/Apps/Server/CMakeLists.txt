@@ -8,4 +8,8 @@ add_executable(${PROJECT_NAME} ${sources} ${headers})
 
 target_link_libraries(${PROJECT_NAME} Libs)
 
+if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+    add_subdirectory(Tests)
+endif()
+
 install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_SOURCE_DIR}/bin/apps)

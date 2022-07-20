@@ -1,2 +1,0 @@
-add_subdirectory(ClientTests)
-add_subdirectory(ServerTests)

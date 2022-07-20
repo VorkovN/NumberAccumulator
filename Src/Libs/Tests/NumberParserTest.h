@@ -1,7 +1,7 @@
 #ifndef NUMBERACCUMULATOR_APPS_TESTS_SOMELIBTEST_H
 #define NUMBERACCUMULATOR_APPS_TESTS_SOMELIBTEST_H
 
-#include <Libs/NumberParser.h>
+#include "NumberParser.h"
 
 namespace tests::libs
 {
@@ -49,7 +49,7 @@ namespace tests::libs
     TEST(getNumbersFromStringTest, doubleSimbolTest)
     {
         std::string testString = "7 7 7";
-        std::multiset<int> referenceSet = {7 7 7};
+        std::multiset<int> referenceSet = {7, 7, 7};
         std::multiset<int> resultSet = ::libs::NumbersParser::getNumbersFromString(testString);
         ASSERT_EQ(resultSet, referenceSet );
     }
