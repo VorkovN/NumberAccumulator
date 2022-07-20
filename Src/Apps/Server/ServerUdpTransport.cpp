@@ -21,7 +21,7 @@ namespace apps::server
 
         int optVal = 1;
         if(setsockopt(_serverSocketFd, SOL_SOCKET, SO_REUSEADDR, &optVal, sizeof(optVal)) == -1)
-            throw std::logic_error("ServerTcpTransport: bind error");
+            throw std::logic_error("ServerTcpTransport: setsockopt error");
 
         if(bind(_serverSocketFd, (sockaddr*)(&_serverSocketAddress), _serverSocketAddressSize) == -1)
             throw std::logic_error("ServerUdpTransport: bind error");

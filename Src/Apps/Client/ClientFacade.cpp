@@ -1,6 +1,5 @@
 #include "ClientFacade.h"
 
-#include <thread>
 #include <iostream>
 #include <unistd.h>
 
@@ -31,14 +30,29 @@ namespace apps::client
             return;
         }
 
-        std::thread(&ClientFacade::handleReceive, this).detach();
         handleInput();
     }
 
-    void ClientFacade::handleReceive()
+    void ClientFacade::printServerAnswer(const std::string &serverAnswer)
+    {
+        std::cout << serverAnswer << std::endl;
+    }
+
+    void ClientFacade::handleInput()
     {
         while (!_needToKillProgram)
         {
+            std::cout << "Input your message: " << std::endl;
+            std::string inputString;
+            std::getline(std::cin,inputString);
+
+            bool sendingResult = _transport->send(inputString);
+            if (!sendingResult)
+            {
+                std::cerr << "Send package error" << std::endl;
+                continue;
+            }
+
             auto printDataOpt = _transport->receive();
             if (!printDataOpt.has_value())
             {
@@ -50,28 +64,6 @@ namespace apps::client
                 _needToKillProgram = true; // если пришли пустые данные, значит это сигнал разрыва соединения
 
             printServerAnswer(printDataOpt.value());
-        }
-    }
-
-    void ClientFacade::printServerAnswer(const std::string &serverAnswer)
-    {
-        std::cout << serverAnswer << std::endl;
-    }
-
-    void ClientFacade::handleInput()
-    {
-        // чтобы не учитывать пробелы в строке ввода
-        while (!_needToKillProgram)
-        {
-            std::cout << "Input your message: " << std::endl;
-            std::string inputString;
-            std::getline(std::cin,inputString);
-
-            bool sendingResult = _transport->send(inputString);
-            if (!sendingResult)
-                std::cerr << "Send package error" << std::endl;
-
-            sleep(1); //можно и удалить, за это время успевает прийти ответ и отрисоваться на консоли
         }
     }
 

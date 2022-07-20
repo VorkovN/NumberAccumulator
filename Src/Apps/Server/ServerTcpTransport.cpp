@@ -22,7 +22,7 @@ namespace apps::server
             throw std::logic_error("ServerTcpTransport: bind error");
 
         if(bind(_serverSocketFd, (sockaddr*)(&_serverSocketAddress), _serverSocketAddressSize) == -1)
-            throw std::logic_error("ServerTcpTransport: bind error");
+            throw std::logic_error("ServerTcpTransport: setsockopt error");
 
         if(listen(_serverSocketFd, SOMAXCONN) == -1)
             throw std::logic_error("ServerTcpTransport: listen error");

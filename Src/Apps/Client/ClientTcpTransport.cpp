@@ -17,6 +17,9 @@ namespace apps::client
         if (_socketFd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP); _socketFd == -1)
             throw std::logic_error("ClientTcpTransport: socket error");
 
+        timeval receiveTimeout{.tv_sec=1, .tv_usec=0};
+        if(setsockopt(_socketFd, SOL_SOCKET, SO_RCVTIMEO, &receiveTimeout, sizeof(receiveTimeout)) == -1)
+            throw std::logic_error("ClientTcpTransport: setsockopt error");
 
         if (connect(_socketFd, (struct sockaddr *)&_socketAddress, _socketAddressSize) == -1)
             throw std::logic_error("ClientTcpTransport: connect error");

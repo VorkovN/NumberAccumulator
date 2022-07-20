@@ -16,6 +16,11 @@ namespace apps::client
     {
         if (_socketFd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP); _socketFd == -1)
             throw std::logic_error("ClientUdpTransport: socket error");
+
+        timeval receiveTimeout{.tv_sec=1, .tv_usec=0};
+        if(setsockopt(_socketFd, SOL_SOCKET, SO_RCVTIMEO, &receiveTimeout, sizeof(receiveTimeout)) == -1)
+            throw std::logic_error("ClientUdpTransport: setsockopt error");
+
     }
 
     ClientUdpTransport::~ClientUdpTransport()
