@@ -1,6 +1,7 @@
 #ifndef NUMBERACCUMULATOR_APPS_SERVER_SERVERSETTINGS_H
 #define NUMBERACCUMULATOR_APPS_SERVER_SERVERSETTINGS_H
 
+#include <cinttypes>
 #include <string>
 
 namespace apps::server

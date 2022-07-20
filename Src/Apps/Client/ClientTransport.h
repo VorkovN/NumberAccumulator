@@ -1,6 +1,7 @@
 #ifndef NUMBERACCUMULATOR_APPS_CLIENT_CLIENTTRANSPORT_H
 #define NUMBERACCUMULATOR_APPS_CLIENT_CLIENTTRANSPORT_H
 
+#include <cinttypes>
 #include <netinet/in.h>
 #include <string>
 

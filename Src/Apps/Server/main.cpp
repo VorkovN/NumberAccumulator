@@ -1,7 +1,6 @@
 #include <csignal>
 
 #include "ServerFacade.h"
-#include "ServerTransport.h"
 #include "ServerSettings.h"
 #include "ServerSettingsParser.h"
 

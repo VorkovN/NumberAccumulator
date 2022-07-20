@@ -1,10 +1,7 @@
 #include "ServerTcpTransport.h"
 
 #include <iostream>
-#include <sys/epoll.h>
 #include <unistd.h>
-#include <vector>
-#include <map>
 
 #include "Constants.h"
 

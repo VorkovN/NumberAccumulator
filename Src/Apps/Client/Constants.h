@@ -5,9 +5,7 @@
 
 namespace apps::client
 {
-
     static constexpr uint32_t INPUT_BUFFER_SIZE = 1024;
-
 
 }
 

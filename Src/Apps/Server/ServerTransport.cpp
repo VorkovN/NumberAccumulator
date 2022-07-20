@@ -1,7 +1,7 @@
 #include "ServerTransport.h"
 
-#include <iostream>
 #include <arpa/inet.h>
+#include <iostream>
 #include <cstring>
 #include <unistd.h>
 

@@ -2,9 +2,10 @@
 #define NUMBERACCUMULATOR_APPS_CLIENT_CLIENTTCPTRANSPORT_H
 
 #include <netinet/in.h>
+#include <optional>
+#include <string>
 
 #include "ClientTransport.h"
-
 
 namespace apps::client
 {

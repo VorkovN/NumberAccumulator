@@ -3,7 +3,6 @@
 
 #include <optional>
 
-
 namespace apps::client
 {
 

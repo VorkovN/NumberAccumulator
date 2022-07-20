@@ -1,7 +1,8 @@
-#include <thread>
-#include <unistd.h>
-#include <iostream>
 #include "ClientFacade.h"
+
+#include <thread>
+#include <iostream>
+#include <unistd.h>
 
 #include "ClientTcpTransport.h"
 #include "ClientUdpTransport.h"

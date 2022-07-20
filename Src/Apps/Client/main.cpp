@@ -1,8 +1,6 @@
 #include <csignal>
-#include <iostream>
 
 #include "ClientFacade.h"
-#include "ClientTransport.h"
 #include "ClientSettings.h"
 #include "ClientSettingsParser.h"
 

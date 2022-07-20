@@ -1,11 +1,11 @@
 #ifndef NUMBERACCUMULATOR_APPS_CLIENT_CLIENTSETTINGS_H
 #define NUMBERACCUMULATOR_APPS_CLIENT_CLIENTSETTINGS_H
 
+#include <cinttypes>
 #include <string>
 
 namespace apps::client
 {
-
     struct ClientSettings
     {
         enum Transport: bool {TCP, UDP};

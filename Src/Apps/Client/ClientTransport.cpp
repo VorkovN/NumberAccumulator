@@ -1,9 +1,8 @@
 #include "ClientTransport.h"
 
-#include <iostream>
 #include <arpa/inet.h>
 #include <cstring>
-#include <thread>
+#include <iostream>
 #include <unistd.h>
 
 

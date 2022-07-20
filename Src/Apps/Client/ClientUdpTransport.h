@@ -5,7 +5,6 @@
 
 namespace apps::client
 {
-
     class ClientUdpTransport: public ClientTransport
     {
     public:

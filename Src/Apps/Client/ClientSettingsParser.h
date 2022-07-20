@@ -2,6 +2,7 @@
 #define NUMBERACCUMULATOR_APPS_CLIENT_CLIENTSETTINGSPARSER_H
 
 #include <optional>
+#include <string>
 
 #include "ClientSettings.h"
 
