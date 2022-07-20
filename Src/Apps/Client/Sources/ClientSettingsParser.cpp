@@ -32,7 +32,7 @@ namespace apps::client
                 {"help",      no_argument,       nullptr, 'h'},
                 {"ip",        required_argument, nullptr, 'i'},
                 {"port",      required_argument, nullptr, 'p'},
-                {"_transport", required_argument, nullptr, 't'},
+                {"transport", required_argument, nullptr, 't'},
                 {nullptr, 0, nullptr, 0}
         };
 

@@ -1,8 +1,8 @@
 #include <csignal>
 
-#include "ServerFacade.h"
-#include "ServerSettings.h"
-#include "ServerSettingsParser.h"
+#include <ServerFacade.h>
+#include <ServerSettings.h>
+#include <ServerSettingsParser.h>
 
 void sig_handler(int sig)
 {

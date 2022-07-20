@@ -1,6 +1,6 @@
 ﻿#include <gtest/gtest.h>
 
-#include "SomeServerTest.h"
+#include "ServerTest.h"
 
 int main(int argc, char** argv)
 {

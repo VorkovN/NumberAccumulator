@@ -1,7 +1,7 @@
 #ifndef NUMBERACCUMULATOR_APPS_CLIENT_CONSTANTS_H
 #define NUMBERACCUMULATOR_APPS_CLIENT_CONSTANTS_H
 
-#include <inttypes.h>
+#include <cinttypes>
 
 namespace apps::client
 {
