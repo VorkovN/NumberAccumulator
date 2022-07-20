@@ -14,7 +14,7 @@ int main(int argc, char** argv)
     signal(SIGINT, sig_handler);
 
     auto settingsOpt = apps::server::ServerSettingsParser::getSettings(argc, argv);
-    if (!settingsOpt) return 0;
+    if (!settingsOpt.has_value()) return 0;
     apps::server::ServerSettings settings = settingsOpt.value();
 
     apps::server::ServerFacade facade(std::move(settings));
