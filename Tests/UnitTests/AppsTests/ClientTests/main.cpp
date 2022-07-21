@@ -1,6 +1,6 @@
 ﻿#include <gtest/gtest.h>
 
-#include "SomeClientTest.h"
+#include "ClientTest.h"
 
 int main(int argc, char** argv)
 {
