@@ -25,6 +25,8 @@ namespace apps::client
 
     std::optional<ClientSettings> ClientSettingsParser::getSettings(int argc, char **argv)
     {
+        optind = 1;
+
         ClientSettings settings;
 
         const char* optstring = "hi:p:t:";

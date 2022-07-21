@@ -18,6 +18,8 @@ namespace apps::server
 
     std::optional<ServerSettings> ServerSettingsParser::getSettings(int argc, char **argv)
     {
+        optind = 1;
+
         ServerSettings settings;
 
         const char* optstring = "hi:p:I:P:";
