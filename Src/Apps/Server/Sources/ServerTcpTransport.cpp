@@ -1,5 +1,6 @@
 #include "ServerTcpTransport.h"
 
+#include <cstring>
 #include <iostream>
 #include <unistd.h>
 
@@ -93,7 +94,7 @@ namespace apps::server
                 if (bytesReceived > 0)
                 {
                     int kostyl = activeEvents[i].data.fd; //необходимо по причине, что невозможно передать в std::any упакованное поле
-                    tasks.push_back({buffer.data(), kostyl});
+                    tasks.push_back({{buffer[0], buffer[1], buffer[2], buffer[3]},buffer.data()+sizeof(uint32_t),kostyl});
                     continue;
                 }
 
@@ -112,8 +113,10 @@ namespace apps::server
     bool ServerTcpTransport::send(MiddleLayerData middleLayerData)
     {
         int peerSocketFd = std::any_cast<int>(middleLayerData.peerInformation);
-
-        ssize_t bytesSent = ::send(peerSocketFd, middleLayerData.sendData.data(), middleLayerData.sendData.size(), MSG_NOSIGNAL);
+        std::array<char, OUTPUT_BUFFER_SIZE> buffer{};
+        memcpy(buffer.data(), &middleLayerData.counterArray, COUNTER_SIZE);
+        memcpy(buffer.data()+COUNTER_SIZE, middleLayerData.sendData.data(), middleLayerData.sendData.size());
+        ssize_t bytesSent = ::send(peerSocketFd, buffer.data(), middleLayerData.sendData.size()+OUTPUT_BUFFER_SIZE, MSG_NOSIGNAL);
         if (bytesSent == -1)
             return false;
 

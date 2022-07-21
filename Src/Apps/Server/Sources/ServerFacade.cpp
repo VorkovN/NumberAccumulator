@@ -45,12 +45,11 @@ namespace apps::server
             if (!receivedDataOpt.has_value())
                 continue;
 
-            for (const auto& task: receivedDataOpt.value())
+            for (auto& task: receivedDataOpt.value())
             {
-                std::string answer = countNumbersInString(task.sendData);
-
+                task.sendData = countNumbersInString(task.sendData);
                 try {
-                    bool sendingResult = transport->send({answer, task.peerInformation});
+                    bool sendingResult = transport->send(task);
                     if (!sendingResult)
                         std::cerr << "Send package error" << std::endl;
                 }

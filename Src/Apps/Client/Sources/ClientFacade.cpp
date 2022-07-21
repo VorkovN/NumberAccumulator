@@ -45,6 +45,8 @@ namespace apps::client
             std::cout << "Input your message: " << std::endl;
             std::string inputString;
             std::getline(std::cin,inputString);
+            if (_needToKillProgram)
+                break;
 
             bool sendingResult = _transport->send(inputString);
             if (!sendingResult)

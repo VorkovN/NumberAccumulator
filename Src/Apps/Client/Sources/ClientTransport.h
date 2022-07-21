@@ -23,6 +23,12 @@ namespace apps::client
         const uint32_t _serverPort;
         socklen_t _socketAddressSize;
 
+        union
+        {
+            uint32_t counterNumber;
+            char counterArray[4];
+        } _packageCounter;
+
     };
 
 }

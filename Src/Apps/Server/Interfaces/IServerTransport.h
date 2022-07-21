@@ -13,6 +13,7 @@ namespace apps::server
     public:
         struct MiddleLayerData
         {
+            char counterArray[4];
             std::string sendData;
             std::any peerInformation;
         };

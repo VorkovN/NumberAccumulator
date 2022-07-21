@@ -16,6 +16,7 @@ namespace apps::client
         _socketAddress.sin_family = AF_INET;
         _socketAddress.sin_addr.s_addr = inet_addr(_serverIp.data());
         _socketAddressSize = sizeof(sockaddr_in);
+        _packageCounter.counterNumber = 1;
     }
 
     ClientTransport::~ClientTransport()

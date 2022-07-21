@@ -1,6 +1,7 @@
 #include "ServerUdpTransport.h"
 
 #include <array>
+#include <cstring>
 #include <exception>
 #include <iostream>
 #include <stdexcept>
@@ -44,14 +45,16 @@ namespace apps::server
 
         // ради красивого интерфейса и удобства обработки результатов пришлось пожертвовать адекватностью возвращаемого значения
         // в рамках данной архитектуры приложения не вижу других вариантов реализации этого return без вектора(точнее вижу, но они мне не нравятся еще больше)
-        return std::vector<IServerTransport::MiddleLayerData>{{buffer.data(), peerSocketAddress}};
+        return std::vector<IServerTransport::MiddleLayerData>{{{buffer[0], buffer[1], buffer[2], buffer[3]}, buffer.data() + sizeof(uint32_t), peerSocketAddress}};
     }
 
     bool ServerUdpTransport::send(MiddleLayerData middleLayerData)
     {
         sockaddr peerSocketAddress = std::any_cast<sockaddr>(middleLayerData.peerInformation);
-
-        ssize_t bytesSent = sendto(_serverSocketFd, middleLayerData.sendData.data(), middleLayerData.sendData.size(), MSG_NOSIGNAL, &peerSocketAddress, sizeof(peerSocketAddress));
+        std::array<char, OUTPUT_BUFFER_SIZE> buffer{};
+        memcpy(buffer.data(), &middleLayerData.counterArray, COUNTER_SIZE);
+        memcpy(buffer.data()+COUNTER_SIZE, middleLayerData.sendData.data(), middleLayerData.sendData.size());
+        ssize_t bytesSent = sendto(_serverSocketFd, buffer.data(), middleLayerData.sendData.size()+OUTPUT_BUFFER_SIZE, MSG_NOSIGNAL, &peerSocketAddress, sizeof(peerSocketAddress));
         if (bytesSent == -1)
             return false;
 
