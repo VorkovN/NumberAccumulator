@@ -39,6 +39,9 @@ namespace apps::client
             if (bytesReceived == -1)
                 return {};
 
+            if (bytesReceived == 0)
+                return "";
+
             if (buffer[0] == _packageCounter.counterArray[0] &&
                 buffer[1] == _packageCounter.counterArray[1] &&
                 buffer[2] == _packageCounter.counterArray[2] &&
