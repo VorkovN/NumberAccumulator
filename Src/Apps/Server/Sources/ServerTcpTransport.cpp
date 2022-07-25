@@ -119,7 +119,7 @@ namespace apps::server
     bool ServerTcpTransport::send(MiddleLayerData middleLayerData)
     {
         int peerSocketFd = std::any_cast<int>(middleLayerData.peerInformation);
-        std::array<char, OUTPUT_BUFFER_SIZE> buffer{};
+        std::array<char, OUTPUT_BUFFER_SIZE+COUNTER_SIZE> buffer{};
         memcpy(buffer.data(), &middleLayerData.counterArray, COUNTER_SIZE);
         memcpy(buffer.data()+COUNTER_SIZE, middleLayerData.sendData.data(), middleLayerData.sendData.size());
         ssize_t bytesSent = ::send(peerSocketFd, buffer.data(), middleLayerData.sendData.size()+COUNTER_SIZE, MSG_NOSIGNAL);

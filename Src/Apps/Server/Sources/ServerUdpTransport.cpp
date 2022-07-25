@@ -62,7 +62,7 @@ namespace apps::server
     bool ServerUdpTransport::send(MiddleLayerData middleLayerData)
     {
         sockaddr peerSocketAddress = std::any_cast<sockaddr>(middleLayerData.peerInformation);
-        std::array<char, OUTPUT_BUFFER_SIZE> buffer{};
+        std::array<char, OUTPUT_BUFFER_SIZE+COUNTER_SIZE> buffer{};
         memcpy(buffer.data(), &middleLayerData.counterArray, COUNTER_SIZE);
         memcpy(buffer.data()+COUNTER_SIZE, middleLayerData.sendData.data(), middleLayerData.sendData.size());
         ssize_t bytesSent = sendto(_serverSocketFd, buffer.data(), middleLayerData.sendData.size()+COUNTER_SIZE, MSG_NOSIGNAL, &peerSocketAddress, sizeof(peerSocketAddress));

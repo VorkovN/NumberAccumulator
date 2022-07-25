@@ -60,7 +60,7 @@ namespace apps::client
 
     bool ClientUdpTransport::send(const std::string& sendData)
     {
-        std::array<char, OUTPUT_BUFFER_SIZE> buffer{};
+        std::array<char, OUTPUT_BUFFER_SIZE+COUNTER_SIZE> buffer{};
         memcpy(buffer.data(), &_packageCounter.counterArray, COUNTER_SIZE);
         memcpy(buffer.data()+COUNTER_SIZE, sendData.data(), sendData.size());
         ssize_t bytesSent = sendto(_socketFd, buffer.data(), sendData.size()+COUNTER_SIZE, MSG_NOSIGNAL,(struct sockaddr*)&_socketAddress, _socketAddressSize);
