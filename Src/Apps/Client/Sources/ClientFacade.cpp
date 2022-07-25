@@ -12,10 +12,19 @@ namespace apps::client
 
     ClientFacade::ClientFacade(ClientSettings&& settings)
     {
-        if (settings.transport)
-            _transport =  std::make_unique<ClientUdpTransport>(std::move(settings.serverIp), settings.serverPort);
-        else
-            _transport =  std::make_unique<ClientTcpTransport>(std::move(settings.serverIp), settings.serverPort);
+        switch (settings.transport) {
+            case ClientSettings::Transport::UDP :
+            {
+                _transport = std::make_unique<ClientUdpTransport>(std::move(settings.serverIp), settings.serverPort);
+                break;
+            }
+            case ClientSettings::Transport::TCP :
+            {
+                _transport = std::make_unique<ClientTcpTransport>(std::move(settings.serverIp), settings.serverPort);
+                break;
+            }
+            //TODO по идее нужно обработать дефолт и кинуть исключение
+        }
     }
 
     void ClientFacade::start()
