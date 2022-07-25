@@ -90,14 +90,7 @@ namespace apps::server
 
                 if (bytesReceived == -1)
                 {
-                    std::cout << "ServerTcpTransport: epoll_ctl exception";
-                    continue;
-                }
-
-                if (bytesReceived > 0)
-                {
-                    int kostyl = activeEvents[i].data.fd; //необходимо по причине, что невозможно передать в std::any упакованное поле
-                    tasks.push_back({{buffer[0], buffer[1], buffer[2], buffer[3]},buffer.data()+sizeof(uint32_t),kostyl});
+                    std::cout << "ServerTcpTransport: recv exception";
                     continue;
                 }
 
@@ -106,7 +99,17 @@ namespace apps::server
                     shutdown(activeEvents[i].data.fd, SHUT_RDWR);
                     close(activeEvents[i].data.fd);
                     _events.erase(event.data.fd);
+                    continue;
                 }
+
+                if (bytesReceived < COUNTER_SIZE)
+                {
+                    std::cout << "ServerTcpTransport: recv exception: wrong counter size";
+                    continue;
+                }
+
+                int kostyl = activeEvents[i].data.fd; //необходимо по причине, что невозможно передать в std::any упакованное поле
+                tasks.push_back({{buffer[0], buffer[1], buffer[2], buffer[3]},{buffer.begin()+COUNTER_SIZE, buffer.begin()+bytesReceived},kostyl});
 
             }
         }
@@ -119,7 +122,7 @@ namespace apps::server
         std::array<char, OUTPUT_BUFFER_SIZE> buffer{};
         memcpy(buffer.data(), &middleLayerData.counterArray, COUNTER_SIZE);
         memcpy(buffer.data()+COUNTER_SIZE, middleLayerData.sendData.data(), middleLayerData.sendData.size());
-        ssize_t bytesSent = ::send(peerSocketFd, buffer.data(), middleLayerData.sendData.size()+OUTPUT_BUFFER_SIZE, MSG_NOSIGNAL);
+        ssize_t bytesSent = ::send(peerSocketFd, buffer.data(), middleLayerData.sendData.size()+COUNTER_SIZE, MSG_NOSIGNAL);
         if (bytesSent == -1)
             return false;
 

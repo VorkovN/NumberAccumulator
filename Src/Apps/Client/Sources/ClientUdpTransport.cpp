@@ -33,14 +33,19 @@ namespace apps::client
     {
         std::array<char, INPUT_BUFFER_SIZE> buffer{};
 
+        ssize_t bytesReceived;
+
         while (true)
         {
-            ssize_t bytesReceived = recvfrom(_socketFd, buffer.data(), buffer.size(), MSG_NOSIGNAL, nullptr, nullptr);
+            bytesReceived = recvfrom(_socketFd, buffer.data(), buffer.size(), MSG_NOSIGNAL, nullptr, nullptr);
             if (bytesReceived == -1)
-                return {};
+                throw std::logic_error("ClientUdpTransport: recvfrom error. Timeout was ended");
 
             if (bytesReceived == 0)
-                return "";
+                return {};
+
+            if (bytesReceived < COUNTER_SIZE)
+                throw std::logic_error("ClientUdpTransport: recvfrom error. Package size error");
 
             if (buffer[0] == _packageCounter.counterArray[0] &&
                 buffer[1] == _packageCounter.counterArray[1] &&
@@ -49,8 +54,8 @@ namespace apps::client
                 break;
         }
 
-        if (++_packageCounter.counterNumber == 0) ++_packageCounter.counterNumber;
-        return buffer.data()+sizeof(_packageCounter);
+        ++_packageCounter.counterNumber;
+        return std::string(buffer.begin(), buffer.begin()+bytesReceived);;
     }
 
     bool ClientUdpTransport::send(const std::string& sendData)

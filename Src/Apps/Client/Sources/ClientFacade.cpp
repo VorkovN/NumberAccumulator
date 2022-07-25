@@ -64,17 +64,22 @@ namespace apps::client
                 continue;
             }
 
-            auto printDataOpt = _transport->receive();
-            if (!printDataOpt.has_value())
+            try {
+                auto printDataOpt = _transport->receive();
+                if (!printDataOpt.has_value()) {
+                    _needToKillProgram = true;
+                    break;
+                }
+
+                printServerAnswer(printDataOpt.value());
+
+            }
+            catch (const std::exception& err)
             {
-                std::cerr << "Receive package error" << std::endl;
+                std::cerr << err.what() << std::endl;
                 continue;
             }
 
-            if (printDataOpt.value().empty())
-                _needToKillProgram = true; // если пришли пустые данные, значит это сигнал разрыва соединения
-
-            printServerAnswer(printDataOpt.value());
         }
     }
 

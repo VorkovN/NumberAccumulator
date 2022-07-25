@@ -39,13 +39,24 @@ namespace apps::server
         socklen_t peerSocketAddressSize = sizeof(sockaddr);
         std::array<char, INPUT_BUFFER_SIZE> buffer{};
 
-        ssize_t bytesReceived = recvfrom(_serverSocketFd, buffer.data(), buffer.size(), MSG_NOSIGNAL, &peerSocketAddress, &peerSocketAddressSize);
-        if (bytesReceived == -1)
+        ssize_t bytesReceived;
+
+        while (true)
+        {
+            bytesReceived = recvfrom(_serverSocketFd, buffer.data(), buffer.size(), MSG_NOSIGNAL, &peerSocketAddress, &peerSocketAddressSize);
+            if (bytesReceived == -1)
+                std::cout << "ServerUdpTransport: recvfrom exception" << std::endl;
+
+            if (bytesReceived >= COUNTER_SIZE)
+                break;
+
             std::cout << "ServerUdpTransport: recvfrom exception" << std::endl;
+        }
+
 
         // ради красивого интерфейса и удобства обработки результатов пришлось пожертвовать адекватностью возвращаемого значения
         // в рамках данной архитектуры приложения не вижу других вариантов реализации этого return без вектора(точнее вижу, но они мне не нравятся еще больше)
-        return std::vector<IServerTransport::MiddleLayerData>{{{buffer[0], buffer[1], buffer[2], buffer[3]}, buffer.data() + sizeof(uint32_t), peerSocketAddress}};
+        return std::vector<IServerTransport::MiddleLayerData>{{{buffer[0], buffer[1], buffer[2], buffer[3]}, {buffer.begin()+COUNTER_SIZE, buffer.begin()+bytesReceived}, peerSocketAddress}};
     }
 
     bool ServerUdpTransport::send(MiddleLayerData middleLayerData)
@@ -54,7 +65,7 @@ namespace apps::server
         std::array<char, OUTPUT_BUFFER_SIZE> buffer{};
         memcpy(buffer.data(), &middleLayerData.counterArray, COUNTER_SIZE);
         memcpy(buffer.data()+COUNTER_SIZE, middleLayerData.sendData.data(), middleLayerData.sendData.size());
-        ssize_t bytesSent = sendto(_serverSocketFd, buffer.data(), middleLayerData.sendData.size()+OUTPUT_BUFFER_SIZE, MSG_NOSIGNAL, &peerSocketAddress, sizeof(peerSocketAddress));
+        ssize_t bytesSent = sendto(_serverSocketFd, buffer.data(), middleLayerData.sendData.size()+COUNTER_SIZE, MSG_NOSIGNAL, &peerSocketAddress, sizeof(peerSocketAddress));
         if (bytesSent == -1)
             return false;
 

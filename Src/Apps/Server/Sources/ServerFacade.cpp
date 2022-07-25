@@ -65,6 +65,9 @@ namespace apps::server
     {
         auto sortedNumbers = libs::NumbersParser::getNumbersFromString(inputString);
 
+        if (sortedNumbers.empty())
+            return inputString.data();
+
         int sum = std::accumulate(sortedNumbers.begin(), sortedNumbers.end(), 0);
 
         std::string answer = makeAnswerString(std::move(sortedNumbers), sum);
