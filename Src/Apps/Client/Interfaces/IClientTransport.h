@@ -2,6 +2,7 @@
 #define NUMBERACCUMULATOR_APPS_CLIENT_ICLIENTTRANSPORT_H
 
 #include <optional>
+#include <string>
 
 namespace apps::client
 {
