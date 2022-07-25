@@ -16,7 +16,7 @@ namespace apps::server
 
     public:
         ServerTransport(std::string&& serverIp, uint32_t serverPort);
-        virtual ~ServerTransport();
+        ~ServerTransport() override;
 
     protected:
         int _serverSocketFd;

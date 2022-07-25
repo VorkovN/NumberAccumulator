@@ -29,6 +29,7 @@ namespace apps::client
 
     ClientTcpTransport::~ClientTcpTransport()
     {
+        shutdown(_socketFd, SHUT_RDWR);
         std::cout << "~ClientTcpTransport()" << std::endl;
     }
 

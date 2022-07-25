@@ -9,6 +9,7 @@ namespace apps::client
     class IClientTransport
     {
     public:
+        virtual ~IClientTransport() = default;
         virtual void init() = 0;
         virtual std::optional<std::string> receive() = 0;
         virtual bool send(const std::string& sendData) = 0;

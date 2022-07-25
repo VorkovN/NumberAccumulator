@@ -19,6 +19,7 @@ namespace apps::server
         };
 
     public:
+        virtual ~IServerTransport() = default;
         virtual void init() = 0;
         virtual std::optional<std::vector<MiddleLayerData>>receive() = 0;
         virtual bool send(MiddleLayerData middleLayerData) = 0;

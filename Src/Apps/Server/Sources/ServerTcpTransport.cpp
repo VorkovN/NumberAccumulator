@@ -43,6 +43,9 @@ namespace apps::server
 
     ServerTcpTransport::~ServerTcpTransport()
     {
+        for (auto& event: _events)
+            shutdown(event.second.data.fd, SHUT_RDWR);
+        shutdown(_serverSocketFd, SHUT_RDWR);
         std::cout << "~ServerTcpTransport()" << std::endl;
     }
 

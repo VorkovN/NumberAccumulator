@@ -14,7 +14,7 @@ namespace apps::client
     {
     public:
         ClientTransport(std::string&& serverIp, uint32_t serverPort);
-        virtual ~ClientTransport();
+        ~ClientTransport() override;
 
     protected:
         int _socketFd;
